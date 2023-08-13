@@ -11,8 +11,8 @@
 ## 技术栈
 ### 后端技术栈
 * Spring Boot：用于构建强大的 Java 后端应用程序。
-* Spring Security：提供用户认证和授权功能。
-* Spring Data JPA：简化数据访问层的开发。
+* JWT：提供用户认证和授权功能。
+* Mybatis-Plus：简化数据访问层的开发。
 * MySQL：作为数据库存储用户和文件信息。
 
 ### 前端技术栈
