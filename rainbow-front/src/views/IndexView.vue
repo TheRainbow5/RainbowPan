@@ -95,8 +95,6 @@
         </el-header>
 
 
-
-
         <el-container style="height: 100%;">
             <!-- 侧标 -->
             <el-aside class="aside" style="width:18%; ">
@@ -120,13 +118,16 @@
                             </div>
                             <!-- 文件文件 -->
                             <el-upload :on-success="handleSuccess" :action="this.$global.Url + '/file/uploadFile'" multiple
-                                :data="{ email: user.email, currentDir: currentDir }" :headers="{ token: this.token }"
-                                :show-file-list="false" class="uploadFile-btn">
+                                :before-upload="beforeHandle"
+                                :data="{ email: user.email, currentDir: this.$store.getters.getCurrentDir }"
+                                :on-progress="handleProgress" :headers="{ token: this.token }" :show-file-list="false"
+                                class="uploadFile-btn">
                                 <div class="addFile-btn">
                                     <i class="el-icon-document" style="margin-left: 15px; margin-right: 10px;"></i>
                                     上传文件
                                 </div>
                             </el-upload>
+
 
                             <!-- 上传文件内容 -->
                             <div class="uploadDir-btn">
@@ -146,6 +147,8 @@
                             新建
                         </button>
                     </el-popover>
+
+
                 </div>
 
                 <!-- 菜单栏 -->
@@ -174,6 +177,13 @@
                                     <div>
                                         <el-progress :percentage="50" color="#909399"></el-progress>
                                     </div>
+                                    <!-- 文件上传进度条 -->
+                                    <div style="margin-top: 30px;">
+                                        <div>
+                                            {{ uploadFileName }}
+                                        </div>
+                                        <el-progress :percentage="uploadPercentage" v-if="uploading" />
+                                    </div>
                                 </el-menu>
                             </el-col>
                         </el-row>
@@ -191,17 +201,20 @@
 <script >
 
 export default {
+    inject: ['reload'],
     components: {},
     props: {},
 
     data() {
         return {
-            isRouterAlive: true,
+            //文件上传进度条
+            uploading: false,
+            uploadPercentage: 0,
+            uploadFileName: '',
             //搜索调条件
             searchInput: '',
             //新建文件夹弹窗
             fileName: '未命名文件夹',
-            currentDir: '',   //当前所在文件夹（前端访问路径）
             dialogTableVisible: false,
             //用户信息
             user: {
@@ -210,6 +223,7 @@ export default {
                 defaultUserPic: require('@/assets/user/2.jpeg'), //新用户默认头像
             },
             token: '',
+
 
         };
     },
@@ -228,6 +242,22 @@ export default {
 
     },
     methods: {
+        beforeHandle(file) {
+            this.uploadFileName = file.name;
+        },
+        /**
+         * 文件上传进度条
+         */
+        handleProgress(event, file, fileList) {
+            this.uploading = true;
+            // Simulating upload progress
+            setTimeout(() => {
+                this.uploadPercentage = parseFloat((event.percent).toFixed(2)); // 保留两位小数
+            }, 1500);
+            if (this.uploadPercentage >= 100) {
+                this.uploading = false;
+            }
+        },
         /**
          * 文件上传成功后
          */
@@ -242,7 +272,7 @@ export default {
                 });
             } else if (response.status === "0") {
                 //刷新页面
-                this.$router.go(0);
+                this.reload();
                 this.$notify({
                     title: '文件上传成功',
                     position: 'top-right',  //显示位置
@@ -259,7 +289,6 @@ export default {
                     offset: 80
                 });
             }
-            console.log(response);
         },
         /**
          * 新建文件夹
@@ -268,7 +297,7 @@ export default {
             let param = {
                 email: this.user.email,
                 fileName: this.fileName,
-                currentDir: this.currentDir
+                currentDir: this.$store.getters.getCurrentDir
             };
             this.$axios.post('file/addDir', param, {
                 headers: { token: this.token }
@@ -284,7 +313,7 @@ export default {
                         offset: 80
                     });
                     //刷新界面
-                    this.$router.go(0);
+                    this.reload();
                 } else {
                     this.$notify({
                         title: '文件创建失败',
@@ -317,7 +346,6 @@ export default {
             }).then(value => {
                 if (value.data.status === '0') {
                     this.user.defaultUserPic = this.$global.Url + "image/" + value.data.data.imageUrl + "?tempid=" + Math.random();
-                    console.log(this.user.defaultUserPic);
                 } else {
                     this.user.defaultUserPic = require('@/assets/user/2.jpeg');
                 }
@@ -338,9 +366,8 @@ export default {
             this.$axios.post('index/setImage', formData, {
                 headers: { 'Content-Type': 'multipart/form-data', token: this.token }
             }).then(value => {
-                //上传成功之后清除历史记录
-                this.$refs.upload.clearFiles();
                 // console.log(value.data);
+                //上传成功之后清除历史记录
                 if (value.data.status === '0') {
                     this.$notify({
                         title: '图片上传成功',
@@ -360,14 +387,14 @@ export default {
                 }
             }).catch(() => {
                 this.$notify({
-                    title: '图片上传失败，请联系管理员',
+                    title: '图片上传失败55555，请联系管理员',
                     position: 'top-right',  //显示位置
                     duration: 3000,  // 2秒关闭
                     type: 'error',
                     offset: 80
                 });
             });
-            this.$router.go(0);
+            this.reload();
             this.userImage();
         },
         /**
@@ -423,6 +450,8 @@ export default {
         },
         // 我的云端硬盘
         toMyPanPage() {
+            this.$store.commit('saveCurrentDir', '');
+            this.reload();
             this.$router.push('/', () => { }, () => { });
         },
         // 跳转到最近使用

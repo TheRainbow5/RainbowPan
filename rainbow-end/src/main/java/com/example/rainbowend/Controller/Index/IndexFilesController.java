@@ -67,7 +67,7 @@ public class IndexFilesController {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String createTime =  dateFormat.format(new Date());   //创建时间
             String updateTime =  dateFormat.format(new Date());  //最后更新时间
-            String folderType="1";          //文件/目录
+            int folderType=1;          //文件/目录
             String status="1";   //状态正常
 
             //2、数据封装
@@ -145,7 +145,15 @@ public class IndexFilesController {
             List<Files>  filesList=indexFileService.getAllFiles(new Page(currentPage,pageSize),filePid);
             map.put("fileList",filesList);
             map.put("totalNum",fileNum);
-            return ResponseResult.ok("获取成功",map);
+            if(fileNum==0){
+                return ResponseResult.error("获取失败",map);
+            }else{
+                //对list进行特殊排序
+                Comparator<Files> comparator = Comparator.comparingInt(Files::getFolderType).reversed();
+                Collections.sort(filesList, comparator);
+                System.out.println(filesList);
+                return ResponseResult.ok("获取成功",map);
+            }
         }catch (Exception e){
             logger.error(e.getMessage());
             return ResponseResult.error("发生一些错误，请联系管理员");
@@ -186,11 +194,10 @@ public class IndexFilesController {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String createTime =  dateFormat.format(new Date());   //创建时间
             String updateTime =  dateFormat.format(new Date());  //最后更新时间
-            String folderType="0";          //文件/目录
+            int folderType=0;          //文件/目录
             //判断文件类型
             String suffix=fileName.substring(fileName.lastIndexOf("."));
             String fileCategory = categoryFile(suffix);
-            System.out.println(fileCategory);
             String status="1";   //状态正常
 
             //2、数据封装
@@ -242,6 +249,9 @@ public class IndexFilesController {
             return ResponseResult.error("文件夹已经存在");
         }
     }
+
+
+
 
     /**
      * 判断文件类型
