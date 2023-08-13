@@ -2,7 +2,6 @@ package com.example.rainbowend.Dao.LoginRegister;
 
 
 import com.example.rainbowend.Entity.User;
-import com.example.rainbowend.Entity.UserFile;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -33,14 +32,4 @@ public interface RegisterDao {
     User isExist(@Param("user") User user);
 
 
-    /**
-     * 用户对应目录路径入库
-     * @param userfile)
-     * @return
-     */
-    @Insert("INSERT INTO userfiles " +
-            "(id,email,root,userimage,dir,file) " +
-            "VALUES(#{userfile.id},#{userfile.email},#{userfile.root}," +
-            "#{userfile.userimage},#{userfile.dir},#{userfile.file})")
-    int addToUserFils(@Param("userfile") UserFile userfile);
 }

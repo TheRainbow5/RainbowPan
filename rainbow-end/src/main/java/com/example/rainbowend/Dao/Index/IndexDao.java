@@ -1,7 +1,6 @@
 package com.example.rainbowend.Dao.Index;
 
 import com.example.rainbowend.Entity.User;
-import com.example.rainbowend.Entity.UserFile;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -27,7 +26,7 @@ public interface IndexDao {
      * @return
      */
     @Update("UPDATE users t " +
-            "SET t.imgurl=#{imgUrl} " +
+            "SET t.IMG_URL=#{imgUrl} " +
             "WHERE t.email=#{email}")
     int saveImgUrl(String email,String imgUrl);
 

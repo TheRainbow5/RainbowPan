@@ -6,3 +6,18 @@ spring:
     username: root
     password: 112233
     driver-class-name: com.mysql.cj.jdbc.Driver
+#jpa
+#  jpa:
+#    database-platform: org.hibernate.dialect.MySQLDialect
+#    database: mysql
+#    hibernate.ddl-auto: update   #自动更新
+#    generate-ddl: true     #自动生成
+#    show-sql: true     #日志显示sql语句
+#    open-in-view: true  #
+
+
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true   #开启驼峰命名
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  #开启日志打印

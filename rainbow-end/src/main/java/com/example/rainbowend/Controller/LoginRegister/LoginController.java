@@ -44,10 +44,7 @@ public class LoginController {
     @PostMapping("/login")
     @ApiOperation("登录请求接口")
     public ResponseResult Login(@ApiParam(value = "用户传入的参数")@RequestBody JSONObject jsonObject) {
-        System.out.println("******登录请求******");
         Map<String, Object> map = new HashMap<>();
-        System.out.println(jsonObject);
-        System.out.println("\n\n");
         try {
             //解析数据
             String email = (String) jsonObject.get("email");

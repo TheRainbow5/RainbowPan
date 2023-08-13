@@ -64,7 +64,7 @@ public class RegisterController {
         String email = jsonObject.getString("email");
 
         //数据封装
-        User user = new User(username, password, email, null, email);//判断用户是否存在
+        User user = new User(username, password, email, null);//判断用户是否存在
         try {
             User userOutput = registerService.isExist(user);
             if (userOutput == null) {
@@ -73,10 +73,11 @@ public class RegisterController {
                 if (i > 0) {   //注册成功
                     //创建账号专属文件夹（邮箱号命名的文件夹）
                     File file = new File(UserRoot, email);
-                    if (file.mkdir()) {
+                    if (!file.exists()) {
+                        file.mkdir();
                         return ResponseResult.ok("注册成功");
                     } else {
-                        return ResponseResult.ok("文件创建失败");
+                        return ResponseResult.ok("注册成功");
                     }
                 } else {
                     //注册失败

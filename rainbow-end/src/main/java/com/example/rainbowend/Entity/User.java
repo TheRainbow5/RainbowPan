@@ -14,11 +14,10 @@ import org.springframework.lang.Nullable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
+    private String email;      //邮箱
     private String username;   //用户名
     private String password;   //密码
-    private String email;      //邮箱
-    private String imgurl;  //图片访问链接
-    private String root;  //根目录
+    private String imgUrl;  //图片访问链接
 }
 
 

@@ -51,7 +51,7 @@ public class ForgetPasswordController {
         String repassword=jsonObject.getString("repassword");
         String email=jsonObject.getString("email");
         //数据封装
-        User userInput = new User(username,repassword,email,null,null);
+        User userInput = new User(username,repassword,email,null);
         try {
             //判断账号是否存在
             User userOutput=forgetPasswordService.isExist(userInput);

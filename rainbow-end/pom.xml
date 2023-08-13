@@ -58,6 +58,11 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>3.1.2</version>
         </dependency>
+        <!-- 添加日志依赖，这里使用 Logback 作为示例 -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
         <!-- springBoot热部署-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

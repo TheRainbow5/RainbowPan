@@ -50,6 +50,7 @@
                     <div class="user-dialog-showUserInfo">
                         <div class="showUserInfo-img">
                             <div class="img-1">
+
                                 <img class="user-img-1" :src="user.defaultUserPic">
                                 <!-- 上传头像 -->
                                 <el-upload class="change-img" action="#" :http-request="uploadFile" :limit="1" ref="upload"
@@ -101,7 +102,7 @@
             <el-aside class="aside" style="width:18%; ">
                 <!-- 新建文件夹弹出框 -->
                 <el-dialog class="newDir-dialog" title="新文件夹" width="30%" top="30vh" :visible.sync="dialogTableVisible">
-                    <input class="newDir-btn-input" v-model="dirName" clearable>
+                    <input class="newDir-btn-input" v-model="fileName" clearable>
                     <div slot="footer" class="dialog-footer">
                         <button class="newDir-btn-cancel" @click="dialogTableVisible = false">取 消</button>
                         <button class="newDir-btn-ok" @click="dialogTableVisible = false; addNewDir();">确 定</button>
@@ -118,12 +119,17 @@
                                 新建文件夹
                             </div>
                             <!-- 文件文件 -->
-                            <div class="newFile-btn">
-                                <i class="el-icon-document" style="margin-left: 15px; margin-right: 10px;"></i>
-                                上传文件
-                            </div>
+                            <el-upload :on-success="handleSuccess" :action="this.$global.Url + '/file/uploadFile'" multiple
+                                :data="{ email: user.email, currentDir: currentDir }" :headers="{ token: this.token }"
+                                :show-file-list="false" class="uploadFile-btn">
+                                <div class="addFile-btn">
+                                    <i class="el-icon-document" style="margin-left: 15px; margin-right: 10px;"></i>
+                                    上传文件
+                                </div>
+                            </el-upload>
+
                             <!-- 上传文件内容 -->
-                            <div class="uploadFile-btn">
+                            <div class="uploadDir-btn">
                                 <i class="el-icon-upload" style="margin-left: 15px;  margin-right: 10px;"></i>
                                 上传文件夹
                             </div>
@@ -185,16 +191,17 @@
 <script >
 
 export default {
-    inject: ['reload'],
     components: {},
     props: {},
+
     data() {
         return {
+            isRouterAlive: true,
             //搜索调条件
             searchInput: '',
             //新建文件夹弹窗
-            dirName: '未命名文件夹',
-            currentLocation: '',   //当前所在文件夹（前端访问路径）
+            fileName: '未命名文件夹',
+            currentDir: '',   //当前所在文件夹（前端访问路径）
             dialogTableVisible: false,
             //用户信息
             user: {
@@ -215,28 +222,58 @@ export default {
         this.getUserInfo();
         //获取图片信息
         this.userImage();
-        //todo:获取我的硬盘中的文件
-
     },
     // 渲染视图后
     mounted() {
 
     },
     methods: {
-
         /**
-         * 添加新文件夹
-         * 1、传入文件名
+         * 文件上传成功后
+         */
+        handleSuccess(response) {
+            if (response.status === '1') {
+                this.$notify({
+                    title: '该文件已经存在',
+                    position: 'top-right',  //显示位置
+                    duration: 3000,
+                    type: 'error',
+                    offset: 80
+                });
+            } else if (response.status === "0") {
+                //刷新页面
+                this.$router.go(0);
+                this.$notify({
+                    title: '文件上传成功',
+                    position: 'top-right',  //显示位置
+                    duration: 3000,  // 3秒关闭
+                    type: 'success',
+                    offset: 80
+                });
+            } else {
+                this.$notify({
+                    title: '发生一些错误，请联系管理员',
+                    position: 'top-right',  //显示位置
+                    duration: 3000,
+                    type: 'error',
+                    offset: 80
+                });
+            }
+            console.log(response);
+        },
+        /**
+         * 新建文件夹
          */
         addNewDir() {
             let param = {
                 email: this.user.email,
-                dirName: this.dirName
+                fileName: this.fileName,
+                currentDir: this.currentDir
             };
-            this.$axios.post('file/newDir', param, {
+            this.$axios.post('file/addDir', param, {
                 headers: { token: this.token }
             }).then(value => {
-                console.log(value.data);
+                // console.log(value.data);
                 //当前所在文件夹位置
                 if (value.data.status === '0') {
                     this.$notify({
@@ -246,24 +283,16 @@ export default {
                         type: 'success',
                         offset: 80
                     });
+                    //刷新界面
+                    this.$router.go(0);
                 } else {
-                    if (value.data.data === '1') {
-                        this.$notify({
-                            title: '该文件已经存在',
-                            position: 'top-right',  //显示位置
-                            duration: 3000,  // 2秒关闭
-                            type: 'warning',
-                            offset: 80
-                        });
-                    } else {
-                        this.$notify({
-                            title: '文件创建失败',
-                            position: 'top-right',  //显示位置
-                            duration: 3000,  // 2秒关闭
-                            type: 'error',
-                            offset: 80
-                        });
-                    }
+                    this.$notify({
+                        title: '文件创建失败',
+                        position: 'top-right',  //显示位置
+                        duration: 3000,  // 2秒关闭
+                        type: 'error',
+                        offset: 80
+                    });
                 }
             }).catch(() => {
                 this.$notify({
@@ -273,7 +302,7 @@ export default {
                     type: 'warning',
                     offset: 80
                 });
-            })
+            });
         },
         /**
          * 获取图片
@@ -287,13 +316,14 @@ export default {
                 headers: { token: this.token }
             }).then(value => {
                 if (value.data.status === '0') {
-                    this.user.defaultUserPic = this.$global.Url + "image/" + value.data.data.imageUrl;
+                    this.user.defaultUserPic = this.$global.Url + "image/" + value.data.data.imageUrl + "?tempid=" + Math.random();
+                    console.log(this.user.defaultUserPic);
                 } else {
                     this.user.defaultUserPic = require('@/assets/user/2.jpeg');
                 }
             }).catch(() => {
                 this.$message.error("发生一些错误，请联系管理员");
-            })
+            });
         },
         /**
          * 自定义上传方法
@@ -310,7 +340,7 @@ export default {
             }).then(value => {
                 //上传成功之后清除历史记录
                 this.$refs.upload.clearFiles();
-                console.log(value.data);
+                // console.log(value.data);
                 if (value.data.status === '0') {
                     this.$notify({
                         title: '图片上传成功',
@@ -319,7 +349,6 @@ export default {
                         type: 'success',
                         offset: 80
                     });
-                    this.userImage();
                 } else {
                     this.$notify({
                         title: '图片上传失败，请联系管理员',
@@ -338,8 +367,8 @@ export default {
                     offset: 80
                 });
             });
-            //刷新页面
             this.$router.go(0);
+            this.userImage();
         },
         /**
          * 判断文件大小和文件格式
@@ -350,10 +379,22 @@ export default {
             const isLt2M = file.size / 1024 / 1024 < 2;
 
             if (!isJPG) {
-                this.$message.error('上传头像图片只能是 JPG 格式!');
+                this.$notify({
+                    title: '上传头像图片只能是 JPG 格式!',
+                    position: 'top-right',  //显示位置
+                    duration: 3000,  // 2秒关闭
+                    type: 'error',
+                    offset: 80
+                });
             }
             if (!isLt2M) {
-                this.$message.error('上传头像图片大小不能超过 2MB!');
+                this.$notify({
+                    title: '上传头像图片大小不能超过 2MB!',
+                    position: 'top-right',  //显示位置
+                    duration: 3000,  // 2秒关闭
+                    type: 'error',
+                    offset: 80
+                });
             }
             return isJPG && isLt2M;
         },
@@ -371,7 +412,13 @@ export default {
                     this.user.username = value.data.data.username;
                 }
             }).catch(() => {
-                this.$message.error("发生一些错误，请联系管理员");
+                this.$notify({
+                    title: '发生一些错误，请联系管理员!',
+                    position: 'top-right',  //显示位置
+                    duration: 3000,  // 2秒关闭
+                    type: 'error',
+                    offset: 80
+                });
             });
         },
         // 我的云端硬盘
@@ -722,24 +769,34 @@ export default {
         transform: scale(0.95);
     }
 
-    .newFile-btn {
+    // 上传文件
+    .uploadFile-btn {
         display: flex;
         align-items: center;
         justify-content: left;
         width: 100%;
         height: 50px;
+
+        .addFile-btn {
+            display: flex;
+            align-items: center;
+            justify-content: left;
+            width: 150px;
+            height: 50px;
+        }
     }
 
-    .newFile-btn:hover {
+    .uploadFile-btn:hover {
         background-color: #e2e9fa;
         cursor: pointer;
     }
 
-    .newFile-btn:active {
+    .uploadFile-btn:active {
         transform: scale(0.95);
     }
 
-    .uploadFile-btn {
+    // 上传文件夹
+    .uploadDir-btn {
         display: flex;
         align-items: center;
         justify-content: left;
@@ -749,12 +806,12 @@ export default {
         border-bottom-right-radius: 20px;
     }
 
-    .uploadFile-btn:hover {
+    .uploadDir-btn:hover {
         background-color: #e2e9fa;
         cursor: pointer;
     }
 
-    .uploadFile-btn:active {
+    .uploadDir-btn:active {
         transform: scale(0.95);
     }
 }

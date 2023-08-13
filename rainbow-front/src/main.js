@@ -5,6 +5,7 @@ import store from './store'
 // 引入element-ui
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import 'element-ui/lib/theme-chalk/base.css';  //过度动画
 // 引入axios
 import axios from 'axios'
 //引入vuex

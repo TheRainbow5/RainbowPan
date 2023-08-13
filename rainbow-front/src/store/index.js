@@ -8,22 +8,19 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
     // 存储全局变量
     state: {
-        Dir: undefined,
+        filePid: undefined,   //当前目录
     },
     // 修改全局变量必须通过mutations中的方法
     mutations: {
         /**
-         * 存储用户信息
+         * 存储当前目录
          * @param {*} state 
          * @param {传入的参数} payload 
          */
-        saveDir(state, payload) {
-            state.Dir = payload;
-            // console.log(state.userInfo);
+        saveFilePid(state, payload) {
+            state.filePid = payload;
+            console.log(state.filePid);
         },
-        logout(state) {
-            state.userInfo = undefined
-        }
     },
     // 异步方法用actions
     // actions不能直接修改全局变量，需要调用commit方法来触发mutations中的方法
@@ -33,13 +30,10 @@ const store = new Vuex.Store({
          * @param {mutations的方法名} context 
          * @param {参数} payload 
          */
-        login(context, payload) {
+        saveFilePid(context, payload) {
             //调用mutations中的login方法，传入参数payload
-            context.commit('login', payload)
+            context.commit('saveFilePid', payload)
         },
-        logout(context) {
-            context.commit('logout')
-        }
     }
 })
 

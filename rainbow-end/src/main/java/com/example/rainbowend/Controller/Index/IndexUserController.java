@@ -3,7 +3,6 @@ package com.example.rainbowend.Controller.Index;
 import com.alibaba.fastjson.JSONObject;
 import com.example.rainbowend.Entity.ResponseResult;
 import com.example.rainbowend.Entity.User;
-import com.example.rainbowend.Entity.UserFile;
 import com.example.rainbowend.Service.Index.IndexService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,11 +68,11 @@ public class IndexUserController {
         Map<String, Object> map = new HashMap<>();
         try {
             //1、获取参数
-            MultipartHttpServletRequest params = ((MultipartHttpServletRequest) request);
-            String email = params.getParameter("email");   //邮箱
+            MultipartHttpServletRequest mulRequest = (MultipartHttpServletRequest) request;
+            String email = mulRequest.getParameter("email");   //邮箱
             String fileName = email + ".jpg";  //文件名称
             //头像
-            List<MultipartFile> files = ((MultipartHttpServletRequest) request).getFiles("file");
+            List<MultipartFile> files = (mulRequest.getFiles("file"));
             MultipartFile multipartFile = files.get(0);
             //存储头像路径
             String imageDir = UserRoot+email+"/userImages/";
@@ -133,8 +132,8 @@ public class IndexUserController {
             String email=jsonObject.getString("email");
             //获取图片的url
             User user=indexService.getUserImageUrl(email);
-            if(user.getImgurl()!=null){
-                map.put("imageUrl",user.getImgurl());
+            if(user.getImgUrl()!=null){
+                map.put("imageUrl",user.getImgUrl());
                 return ResponseResult.ok("获取图片访问地址成功",map);
             }else{
                 return ResponseResult.error("获取图片访问地址失败");

@@ -1,7 +1,6 @@
 package com.example.rainbowend.Service.Index;
 
 import com.example.rainbowend.Entity.User;
-import com.example.rainbowend.Entity.UserFile;
 
 /**
  * Rainbow

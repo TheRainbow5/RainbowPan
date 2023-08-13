@@ -2,7 +2,6 @@ package com.example.rainbowend.Service.LoginRegister.Impl;
 
 import com.example.rainbowend.Dao.LoginRegister.RegisterDao;
 import com.example.rainbowend.Entity.User;
-import com.example.rainbowend.Entity.UserFile;
 import com.example.rainbowend.Service.LoginRegister.RegisterService;
 import org.springframework.stereotype.Service;
 
@@ -31,13 +30,4 @@ public class RegisterServiceImpl implements RegisterService {
         return  registerDao.isExist(user);
     }
 
-    /**
-     * 用户对应目录路径入库
-     * @param userFile
-     * @return
-     */
-    @Override
-    public int addToUserFils(UserFile userFile) {
-        return registerDao.addToUserFils(userFile);
-    }
-}
+ }

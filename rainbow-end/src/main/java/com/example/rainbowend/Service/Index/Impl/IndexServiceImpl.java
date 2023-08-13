@@ -2,7 +2,6 @@ package com.example.rainbowend.Service.Index.Impl;
 
 import com.example.rainbowend.Dao.Index.IndexDao;
 import com.example.rainbowend.Entity.User;
-import com.example.rainbowend.Entity.UserFile;
 import com.example.rainbowend.Service.Index.IndexService;
 import org.springframework.stereotype.Service;
 

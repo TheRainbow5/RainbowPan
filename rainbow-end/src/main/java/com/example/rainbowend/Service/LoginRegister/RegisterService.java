@@ -1,7 +1,6 @@
 package com.example.rainbowend.Service.LoginRegister;
 
 import com.example.rainbowend.Entity.User;
-import com.example.rainbowend.Entity.UserFile;
 
 /**
  * Rainbow
@@ -13,6 +12,4 @@ public interface RegisterService {
     int registerNewUser(User user);
 
     User isExist(User user);
-
-    int addToUserFils(UserFile userFile);
 }
