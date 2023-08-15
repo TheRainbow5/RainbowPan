@@ -2,8 +2,8 @@ package com.example.rainbowend.Service.Index;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.rainbowend.Entity.Files;
-
-import java.util.List;
+import com.example.rainbowend.Entity.ResponseResult;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Rainbow
@@ -11,15 +11,10 @@ import java.util.List;
  * @DATE:2023/8/10 0010
  */
 public interface IndexFileService {
-    int saveDir(Files userFile);
+    ResponseResult createNewDir(Files files);
 
-    Files existDir(Files files);
+    ResponseResult getAllFiles(Page page, String email, String absolutePath);
 
-    List<Files> getAllFiles(Page page, String filePid);
+    ResponseResult uploadNewFile(Files files, MultipartFile multipartFile);
 
-    List<Files> getAllFilesNum(String filePid);
-
-    Files existFile(Files files);
-
-    int saveFile(Files files);
 }

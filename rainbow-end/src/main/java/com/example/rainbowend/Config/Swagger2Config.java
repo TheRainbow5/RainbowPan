@@ -17,14 +17,13 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 /**
  * Rainbow
  * Swagger配置类
- * @DATE:2023/8/4
- * 访问地址：http://localhost:9090/swagger-ui.html
  *
+ * @DATE:2023/8/4 访问地址：http://localhost:9090/swagger-ui.html
  */
 @Configuration
 @EnableWebMvc
 @EnableSwagger2
-public class Swagger2Config  implements WebMvcConfigurer {
+public class Swagger2Config implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**").addResourceLocations(
@@ -36,8 +35,9 @@ public class Swagger2Config  implements WebMvcConfigurer {
         WebMvcConfigurer.super.addResourceHandlers(registry);
 
     }
+
     @Bean
-    public Docket coreApiConfig(){
+    public Docket coreApiConfig() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(adminApiInfo())
                 //enable设置是否启动Swagger
@@ -51,13 +51,14 @@ public class Swagger2Config  implements WebMvcConfigurer {
 //                .paths(Predicates.and(PathSelectors.regex("/admin/.*")))
                 .build();
     }
-    private ApiInfo adminApiInfo(){
+
+    private ApiInfo adminApiInfo() {
         return new ApiInfoBuilder()
                 .title("Rainbow网盘系统--api文档")
                 .description("Rainbow网盘系统接口描述")
                 .version("1.0")
                 //
-                .contact(new Contact("Rainbow","http://baidu.com","728831102@qq.com"))
+                .contact(new Contact("Rainbow", "http://baidu.com", "728831102@qq.com"))
                 .build();
     }
 }

@@ -13,6 +13,7 @@ import java.util.Map;
 /**
  * Rainbow
  * 对index请求设置拦截器
+ *
  * @DATE:2023/8/8 0008
  */
 @Component

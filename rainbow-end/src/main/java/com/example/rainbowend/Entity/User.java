@@ -1,8 +1,8 @@
 package com.example.rainbowend.Entity;
 
-import io.swagger.annotations.ApiModel;
-import lombok.*;
-import org.springframework.lang.Nullable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 /**
