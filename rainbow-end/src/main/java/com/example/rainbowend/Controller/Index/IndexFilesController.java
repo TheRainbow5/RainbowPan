@@ -23,7 +23,6 @@ import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -55,6 +54,9 @@ public class IndexFilesController {
             //1、解析参数
             String fileId = UUID.randomUUID().toString().replace("-","");  //文件id
             String fileName=jsonObject.getString("fileName");  //文件名
+            if(fileName.equals("")){
+                fileName="未命名文件夹";
+            }
             String email=jsonObject.getString("email");
             String filePid;      //父路径
             if(jsonObject.getString("currentDir").equals("")){
@@ -129,13 +131,14 @@ public class IndexFilesController {
             //1、解析参数
             String email=jsonObject.getString("email");
             String currentDir=jsonObject.getString("currentDir");  //当前目录
+            String absolutePath=jsonObject.getString("absolutePath");  //访问全路径
             int currentPage= Integer.parseInt(jsonObject.getString("currentPage"));  //当前页数
             int pageSize= Integer.parseInt(jsonObject.getString("pageSize"));   //页面带线啊哦
-            String filePid;
-            if(currentDir.equals("")){
-                filePid=email;   //当前目录
+            String filePid;   //当前目录;
+            if(absolutePath.equals("")){
+                filePid=email;
             }else{
-                filePid=email+"/"+currentDir;   //当前目录
+                filePid=email+absolutePath;
             }
             //2、查询所有子文件
                 //查询一共有多少条
@@ -148,10 +151,6 @@ public class IndexFilesController {
             if(fileNum==0){
                 return ResponseResult.error("获取失败",map);
             }else{
-                //对list进行特殊排序
-                Comparator<Files> comparator = Comparator.comparingInt(Files::getFolderType).reversed();
-                Collections.sort(filesList, comparator);
-                System.out.println(filesList);
                 return ResponseResult.ok("获取成功",map);
             }
         }catch (Exception e){
@@ -262,40 +261,61 @@ public class IndexFilesController {
         //视频
         List<String> videoList = new ArrayList<>();
         videoList.add(".mp4");
+        videoList.add(".MP4");
         videoList.add(".avi");
+        videoList.add(".AVI");
         videoList.add(".mov");
+        videoList.add(".MOV");
         videoList.add(".wmv");
-        videoList.add(".mkv");
+        videoList.add(".WMV");
         videoList.add(".flv");
+        videoList.add(".FLV");
+        videoList.add(".mkv");
+        videoList.add(".MKV");
         videoList.add(".webm");
-        videoList.add(".m4v");
+        videoList.add(".WEBM");
         videoList.add(".3gp");
-        videoList.add(".mpeg");
+        videoList.add(".3GP");
         //音频
         List<String> audioList = new ArrayList<>();
         audioList.add(".mp3");
+        audioList.add(".MP3");
         audioList.add(".wav");
+        audioList.add(".WAV");
         audioList.add(".flac");
+        audioList.add(".FLAC");
         audioList.add(".aac");
+        audioList.add(".AAC");
         audioList.add(".ogg");
+        audioList.add(".OGG");
         audioList.add(".wma");
+        audioList.add(".WMA");
         audioList.add(".m4a");
+        audioList.add(".M4A");
         audioList.add(".ape");
-        audioList.add(".mp2");
-        audioList.add(".mid");
+        audioList.add(".APE");
+        audioList.add(".amr");
+        audioList.add(".AMR");
         //图片
         List<String> imageList = new ArrayList<>();
         imageList.add(".jpg");
-        imageList.add(".jpeg");
+        imageList.add(".JPG");
         imageList.add(".png");
+        imageList.add(".PNG");
+        imageList.add(".jpeg");
+        imageList.add(".JPEG");
         imageList.add(".gif");
+        imageList.add(".GIF");
         imageList.add(".bmp");
-        imageList.add(".tiff");
-        imageList.add(".tif");
+        imageList.add(".BMP");
         imageList.add(".webp");
+        imageList.add(".WEBP");
         imageList.add(".svg");
+        imageList.add(".SVG");
         imageList.add(".ico");
+        imageList.add(".ICO");
         imageList.add(".psd");
+        imageList.add(".PSD");
         //word文档
         List<String> wordList = new ArrayList<>();
         wordList.add(".doc");

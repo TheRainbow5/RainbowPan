@@ -39,7 +39,8 @@ public interface IndexFileDao {
      * @return
      */
     @Select("SELECT t.* FROM files t " +
-            "WHERE t.FILE_PID=#{filePid}")
+            "WHERE t.FILE_PID=#{filePid}" +
+            "ORDER BY t.FOLDER_TYPE DESC")
     List<Files> getAllFiles(Page page,String filePid);
 
 

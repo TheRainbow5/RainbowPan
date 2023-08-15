@@ -50,7 +50,6 @@
                     <div class="user-dialog-showUserInfo">
                         <div class="showUserInfo-img">
                             <div class="img-1">
-
                                 <img class="user-img-1" :src="user.defaultUserPic">
                                 <!-- 上传头像 -->
                                 <el-upload class="change-img" action="#" :http-request="uploadFile" :limit="1" ref="upload"
@@ -69,7 +68,7 @@
 
                         </div>
                         <div class=" showUserInfo-userInfo">
-                            <div>{{ user.username }}</div>
+                            <div><b>{{ user.username }}</b></div>
                             <div style=" margin-top: 10px;">{{ user.email }}</div>
                         </div>
                     </div>
@@ -100,9 +99,9 @@
             <el-aside class="aside" style="width:18%; ">
                 <!-- 新建文件夹弹出框 -->
                 <el-dialog class="newDir-dialog" title="新文件夹" width="30%" top="30vh" :visible.sync="dialogTableVisible">
-                    <input class="newDir-btn-input" v-model="fileName" clearable>
+                    <input class="newDir-btn-input" placeholder="未命名文件夹" value="未命名文件夹" v-model="fileName" clearable>
                     <div slot="footer" class="dialog-footer">
-                        <button class="newDir-btn-cancel" @click="dialogTableVisible = false">取 消</button>
+                        <button class="newDir-btn-cancel" @click="dialogTableVisible = false; fileName = ''">取 消</button>
                         <button class="newDir-btn-ok" @click="dialogTableVisible = false; addNewDir();">确 定</button>
                     </div>
                 </el-dialog>
@@ -127,13 +126,11 @@
                                     上传文件
                                 </div>
                             </el-upload>
-
-
-                            <!-- 上传文件内容 -->
-                            <div class="uploadDir-btn">
+                            <!-- 上传文件夹 -->
+                            <!-- <div class="uploadDir-btn">
                                 <i class="el-icon-upload" style="margin-left: 15px;  margin-right: 10px;"></i>
                                 上传文件夹
-                            </div>
+                            </div> -->
                         </div>
                         <!-- 新建按钮 -->
                         <button class="newfile-btn" slot="reference">
@@ -214,7 +211,7 @@ export default {
             //搜索调条件
             searchInput: '',
             //新建文件夹弹窗
-            fileName: '未命名文件夹',
+            fileName: '',
             dialogTableVisible: false,
             //用户信息
             user: {
@@ -253,7 +250,7 @@ export default {
             // Simulating upload progress
             setTimeout(() => {
                 this.uploadPercentage = parseFloat((event.percent).toFixed(2)); // 保留两位小数
-            }, 1500);
+            }, 100);
             if (this.uploadPercentage >= 100) {
                 this.uploading = false;
             }
@@ -345,12 +342,18 @@ export default {
                 headers: { token: this.token }
             }).then(value => {
                 if (value.data.status === '0') {
-                    this.user.defaultUserPic = this.$global.Url + "image/" + value.data.data.imageUrl + "?tempid=" + Math.random();
+                    this.user.defaultUserPic = this.$global.Url + "uploadFile/" + value.data.data.imageUrl + "?tempid=" + Math.random();
                 } else {
                     this.user.defaultUserPic = require('@/assets/user/2.jpeg');
                 }
             }).catch(() => {
-                this.$message.error("发生一些错误，请联系管理员");
+                this.$notify({
+                    title: '发生一些错误，请联系管理员',
+                    position: 'top-right',  //显示位置
+                    duration: 3000,  // 2秒关闭
+                    type: 'error',
+                    offset: 80
+                });
             });
         },
         /**
@@ -387,10 +390,10 @@ export default {
                 }
             }).catch(() => {
                 this.$notify({
-                    title: '图片上传失败55555，请联系管理员',
+                    title: '发生一些错误，请联系管理员',
                     position: 'top-right',  //显示位置
                     duration: 3000,  // 2秒关闭
-                    type: 'error',
+                    type: 'warning',
                     offset: 80
                 });
             });
@@ -451,6 +454,7 @@ export default {
         // 我的云端硬盘
         toMyPanPage() {
             this.$store.commit('saveCurrentDir', '');
+            this.$store.commit('saveAbsolutePath', '');
             this.reload();
             this.$router.push('/', () => { }, () => { });
         },
@@ -777,8 +781,10 @@ export default {
 .newButton-dialog {
     background-color: #edf2fc;
     border-radius: 20px;
-    height: 150px;
+    // height: 150px; //上传文件夹
+    height: 100px;
 
+    // 新建文件夹
     .newDir-btn {
         display: flex;
         align-items: center;
@@ -805,6 +811,8 @@ export default {
         justify-content: left;
         width: 100%;
         height: 50px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
 
         .addFile-btn {
             display: flex;

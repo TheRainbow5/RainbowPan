@@ -49,7 +49,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry){
         //拦截/**请求映射到外部资源路径下
-        registry.addResourceHandler("/image/**").addResourceLocations("file:"+UserRoot);
+        registry.addResourceHandler("/uploadFile/**").addResourceLocations("file:"+UserRoot);
     }
 
 }

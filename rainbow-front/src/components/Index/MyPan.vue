@@ -4,11 +4,22 @@
         <div style="width: 100%; height:10%; background-color:blanchedalmond"></div>
 
         <!-- 显示文件 -->
-        <div style="width: 100%; height:80%;  margin-top: 10px;">
+        <div style="width: 100%; height:80%; ">
+            <!-- 退回父目录 -->
+            <div class="back-div" @click="backToPreviousView">
+                <div class="back-btn">
+                    <svg t="1691995311568" class="back-btn-icon" viewBox="0 0 1041 1024" version="1.1"
+                        xmlns="http://www.w3.org/2000/svg" p-id="5351" width="30" height="30">
+                        <path
+                            d="M831.747371 420.007843c60.838623 36.268018 135.484717 134.100184 166.540014 251.862261 31.060413 117.76924 25.910113 223.224014 25.910113 223.224014s-40.209794-64.941058-56.512085-87.710644C951.382099 784.621051 882.686531 699.801247 776.058025 650.641617c-106.627483-49.158606-284.857746-40.404222-284.857746-40.404222l0 204.706265L0 467.010343l491.200278-347.934341 0 206.589149c0 0 117.998461 8.881274 179.679265 21.654182C774.766612 368.833323 831.747371 420.007843 831.747371 420.007843L831.747371 420.007843zM831.747371 420.007843"
+                            fill="#8a8a8a" p-id="5352"></path>
+                    </svg>
+                </div>
+            </div>
             <!-- 内容 -->
             <el-row :gutter="20">
                 <el-col :span="8" v-for="colTtem in  colItems " :key="colTtem.id">
-                    <button class="file-btn" v-on:dblclick="subFiles(colTtem)">
+                    <button class="file-btn">
                         <!-- 目录 -->
                         <svg v-if="colTtem.folderType == 1" t="1691739427959" class="dir" viewBox="0 0 1024 1024"
                             version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="18064" width="30" height="30">
@@ -35,7 +46,7 @@
                         </svg>
                         <!-- 图片 -->
                         <img class="dir" style="width: 15%; height: 40px; margin-left: 17px;"
-                            v-if="colTtem.fileCategory === '2'" :src="url + 'image/' + colTtem.filePath">
+                            v-if="colTtem.fileCategory === '2'" :src="url + 'uploadFile/' + colTtem.filePath">
                         <!-- pdf -->
                         <svg v-if="colTtem.fileCategory === '3'" t="1691935955004" class="dir" viewBox="0 0 1024 1024"
                             version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12906" width="30" height="30">
@@ -145,28 +156,40 @@
                                 fill="#8a8a8a" p-id="11579"></path>
                         </svg>
                         <!-- 文件 -->
-                        <div class="dir-content">
+                        <div class="dir-content" v-on:dblclick="subFiles(colTtem)">
                             {{ colTtem.fileName }}
                         </div>
 
-
-                        <!-- todo:弹窗 -->
+                        <!-- 弹窗 -->
                         <el-popover popper-class="operation-dialog" :visible-arrow="false" placement="bottom" width="150"
                             trigger="click">
-                            <!-- 下载 -->
-                            <div class="download-btn">
-
+                            <div class="dialog-div">
+                                <!-- 下载 -->
+                                <!-- <a :href="url + 'uploadFile/' + email + '/' + colTtem.fileName" download>
+                                </a> -->
+                                <button class="download-btn">
+                                    下载
+                                </button>
+                                <!-- 重命名 -->
+                                <button class="resetname-btn">
+                                    重命名
+                                </button>
+                                <!-- 删除 -->
+                                <button class="delete-btn" @click="deleteFile(colTtem)">
+                                    删除
+                                </button>
+                                <!-- 详细信息 -->
+                                <button class="detail-btn">
+                                    详细信息
+                                </button>
                             </div>
-                            <!-- 重命名 -->
-                            <div class="resetname-btn">
-
-                            </div>
-
+                            <!-- 菜单按钮 -->
                             <button class="dir-btn" slot="reference">
                                 <i class="el-icon-s-operation"></i>
                             </button>
                         </el-popover>
                     </button>
+
                 </el-col>
             </el-row>
 
@@ -180,17 +203,20 @@
     </div>
 </template>
 
-<script>
+<script scoped>
 export default {
+    inject: ['reload'],
     components: {},
     props: {},
     data() {
         return {
+            //文件删除
+
             //数组大小=16
             colItems: [],   //存储子文件
             email: '',
-            currentDir: '',   //当前目录
             currentPage: 1,
+            currentDir: '',
             token: '',
             //分页
             pageSize: 12,
@@ -210,15 +236,72 @@ export default {
     },
     methods: {
         /**
-         * 获取所有子文件
+         * 删除文件
          */
+        deleteFile(colItem) {
+            this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true,
+
+            }).then(() => {
+                //发送删除请求
+                this.$axios.post('operation/delete', colItem, {
+                    headers: { token: this.toekn }
+                }).then(value => {
+                    console.log(value.data);
+                    if (value.data.status === '0') {
+                        this.$notify({
+                            title: '文件删除成功',
+                            position: 'top-right',  //显示位置
+                            duration: 3000,  // 3秒关闭
+                            type: 'success',
+                            offset: 80
+                        });
+                        //刷新页面
+                        this.reload();
+                    }
+                })
+            }).catch(() => {
+                this.$notify({
+                    title: '发生一些错误，请联系管理员!',
+                    position: 'top-right',  //显示位置
+                    duration: 3000,  // 3秒关闭
+                    type: 'error',
+                    offset: 80
+                });
+            });
+        },
+        /**
+         * 退回上一个目录
+         */
+        backToPreviousView() {
+            //获取全路径和当前目录
+            let absolutePath = this.$store.getters.getAbsolutePath;
+            let currentDir = this.$store.getters.getCurrentDir;
+            //退回时修改的全路径和当前目录
+            let modifiedAbsolutePath = absolutePath.replace("/" + currentDir, "");
+            let partsCurrentDir = absolutePath.replace("/" + currentDir, "").split('/');
+            let modifiedCurrentDir = partsCurrentDir[partsCurrentDir.length - 1];
+            //修改全路径和当前目录到vuex状态管理
+            this.$store.commit('saveCurrentDir', modifiedCurrentDir);
+            this.$store.commit('modifiedAbsolutePath', modifiedAbsolutePath);
+            //获取所有子文件
+            this.getAllFiles();
+        },
+        /**
+        * 双击显示所有子文件
+        */
         subFiles(colItem) {
             //判断点击的是否是文件夹
             if (colItem.folderType != 1) {  //文件
                 return;
             } else {
+                // console.log(colItem);
                 //将当前目录存储到vuex状态管理
                 this.$store.commit('saveCurrentDir', colItem.fileName);
+                this.$store.commit('saveAbsolutePath', colItem.fileName);
                 this.getAllFiles();
             }
         },
@@ -233,9 +316,11 @@ export default {
             let param = {
                 email: this.email,
                 currentDir: this.$store.getters.getCurrentDir,
+                absolutePath: this.$store.getters.getAbsolutePath,
                 currentPage: this.currentPage,
                 pageSize: this.pageSize
             };
+            // console.log(param);
             this.$axios.post('file/allFiles', param, {
                 headers: { token: this.toekn }
             }).then(value => {
@@ -263,6 +348,88 @@ export default {
 
 
 <style lang="scss" scoped>
+.newDir-dialog {
+    .newDir-btn-input {
+        border: 2px, solid #edf2fc;
+        height: 40px;
+        width: 100%;
+        outline: none;
+    }
+
+    .dialog-footer {
+        display: flex;
+        align-items: center;
+        justify-content: right;
+
+        .newDir-btn-cancel {
+            font-size: small;
+            background-color: white;
+            border: none;
+            width: 70px;
+            height: 40px;
+            margin-right: 40px;
+            border-radius: 10px;
+        }
+
+        .newDir-btn-cancel:hover {
+            background-color: #edf2fc;
+            cursor: pointer;
+            // filter: brightness(0.9);
+        }
+
+        .newDir-btn-cancel:active {
+            transform: scale(0.95);
+        }
+
+        .newDir-btn-ok {
+            font-size: small;
+            background-color: white;
+            border: none;
+            width: 70px;
+            height: 40px;
+            border-radius: 10px;
+            margin-right: 10px;
+        }
+
+        .newDir-btn-ok:hover {
+            background-color: #edf2fc;
+            cursor: pointer;
+            // filter: brightness(0.9);
+        }
+
+        .newDir-btn-ok:active {
+            transform: scale(0.95);
+        }
+    }
+
+}
+
+.back-div {
+    width: 100%;
+    height: 30px;
+
+    .back-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 5%;
+        height: 100%;
+        border-radius: 20px;
+        margin-left: 19px;
+        background-color: #f2f6fc;
+    }
+
+    .back-btn:hover {
+        cursor: pointer;
+        filter: brightness(0.95);
+    }
+
+    .back-btn:active {
+        transform: scale(0.95);
+    }
+
+}
+
 .pagination-div {
     display: flex;
     align-items: center;
@@ -347,12 +514,7 @@ export default {
                 text-overflow: ellipsis;
             }
 
-            .operation-dialog {
-                background-color: #edf2fc;
-                border-radius: 20px;
-                height: 150px;
 
-            }
 
             .dir-btn {
                 display: flex;
@@ -398,5 +560,100 @@ export default {
         }
 
     }
+}
+</style>
+
+<style lang="scss">
+.operation-dialog {
+    display: flex;
+    // 垂直居中
+    align-items: center;
+    background-color: #edf2fc;
+    border-radius: 20px;
+    height: 150px;
+
+    .dialog-div {
+        width: 100%;
+        height: 100%;
+        background-color: #f7f9fc;
+        border-radius: 20px;
+
+        .download-btn {
+            border: none;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            background-color: white;
+            height: 25%;
+            width: 100%;
+        }
+
+        .download-btn:hover {
+            background-color: #e2e9fa;
+            cursor: pointer;
+        }
+
+        .download-btn:active {
+            transform: scale(0.95);
+        }
+
+        .resetname-btn {
+            border: none;
+            background-color: white;
+            height: 25%;
+            width: 100%;
+        }
+
+        .resetname-btn:hover {
+            background-color: #e2e9fa;
+            cursor: pointer;
+        }
+
+        .resetname-btn:active {
+            transform: scale(0.95);
+        }
+
+        .delete-btn {
+            border: none;
+            background-color: white;
+            height: 25%;
+            width: 100%;
+
+            //删除弹窗
+            .delete-dialog .el-button--primary {
+                background-color: #ff0000;
+                /* 自定义主按钮的背景色 */
+            }
+
+
+        }
+
+        .delete-btn:hover {
+            background-color: #e2e9fa;
+            cursor: pointer;
+        }
+
+        .delete-btn:active {
+            transform: scale(0.95);
+        }
+
+        .detail-btn {
+            border: none;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            background-color: white;
+            height: 25%;
+            width: 100%;
+        }
+
+        .detail-btn:hover {
+            background-color: #e2e9fa;
+            cursor: pointer;
+        }
+
+        .detail-btn:active {
+            transform: scale(0.95);
+        }
+    }
+
 }
 </style>

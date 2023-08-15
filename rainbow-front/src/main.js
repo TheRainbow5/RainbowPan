@@ -12,10 +12,13 @@ import axios from 'axios'
 import vuex from 'vuex'
 // 导入共用组件
 import global from './global/index.js'
-
+import VueDialogs from 'vue-dialogs';
+//导入全局api
+// import api from './api/index.js'
 
 //注册vuex
 Vue.use(vuex)
+Vue.use(VueDialogs)
 Vue.config.productionTip = false
 // 注册element-ui
 Vue.use(ElementUI)
@@ -23,6 +26,7 @@ Vue.use(ElementUI)
 Vue.prototype.$axios = axios
 //注册全局变量对象
 Vue.prototype.$global = global
+// Vue.prototype.$api = api
 
 axios.defaults.baseURL = global.Url //设置全局的url地址
 

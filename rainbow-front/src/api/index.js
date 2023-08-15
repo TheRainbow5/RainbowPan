@@ -6,58 +6,57 @@ axios.defaults.withCredentials = true;
 //let prefixUrl = window.location.protocol + "//" + location.host + "/";
 axios.defaults.baseURL = 'http://localhost:9090'  //设置全局的url地址
 
-/**
- * Post请求
- * @param {请求地址} url
- * @param {请求参数} param
- * @param {*} failure
- * @param {*} error
- */
-// function commonPost(url, param) {
-//     axios.post(url, param, {
-//         headers: {
-//             "Content-Type": 'application/x-www/form-urlencoded'
-//         },
-//     }).then(data => {
-//         if (data.success) {
-//             console.log("发送成功");
-//         } else {
-//             this.$message({
-//                 message: "警告哦，这是一条警告消息",
-//                 type: "warning"
-//             });
-//         }
-//     }).catch(() => {
-//         this.$message({
-//             message: "发生一些错误，请联系管理员",
-//             type: "error"
-//         });
+
+// /**
+//  * 下载附件
+//  * @param path 接口地址
+//  * @param param  请求参数
+//  */
+// function downloadGet(path, param) {
+//     var url = baseUrl + path + param
+//     axios({
+//         method: 'get',
+//         url: url,
+//         responseType: 'blob',
+//         headers: { 'token': localStorage.getItem('token') }
+//     }).then(res => {
+//         resolveBlob(res, res.data.type)
 //     })
 // }
-
-/**
- * 通用的GET请求
- * @param {请求地址} url
- * @param {*} failure
- * @param {*} error
- */
-// function commonGet(url) {
-//     //格式化请求url
-//     axios.post(url, param).then(data => {
-//         if (data.success) {
-//             console.log("发送成功");
-//         } else {
-//             this.$message({
-//                 message: "发生一些错误，请联系管理员",
-//                 type: "warning"
-//             });
-//         }
-//     }).catch(() => {
-//         this.$message({
-//             message: "警告哦，这是一条警告消息",
-//             type: "error"
-//         });
-//     })
+// //不同文件标识
+// const mimeMap = {
+//     xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+//     xls: 'application/vnd.ms-excel',
+//     zip: 'application/zip',
+//     jpg: 'image/jpg',
+//     jpeg: 'image/jpeg',
+//     png: 'image/png',
+//     doc: 'application/msword',
+//     docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+//     ppt: 'application/vnd.ms-powerpoint',
+//     txt: 'text/plain',
+//     pdf: 'application/pdf'
+// }
+// /**
+//  * 解析blob响应内容并下载
+//  * @param {*} res blob响应内容
+//  * @param {String} mimeType MIME类型
+//  */
+// export function resolveBlob(res, mimeType) {
+//     const aLink = document.createElement('a')
+//     var blob = new Blob([res.data], { type: mimeType })
+//     // 从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
+//     var patt = new RegExp('filename=([^;]+\\.[^\\.;]+);*')
+//     var contentDisposition = decodeURI(res.headers['content-disposition'])
+//     var result = patt.exec(contentDisposition)
+//     var fileName = result[1]
+//     fileName = fileName.replace(/\"/g, '')
+//     aLink.href = URL.createObjectURL(blob)
+//     aLink.setAttribute('download', fileName) // 设置下载文件名称
+//     document.body.appendChild(aLink)
+//     aLink.click()
+//     document.body.removeChild(aLink);
 // }
 
-// export { commonGet, commonPost }
+
+// export { downloadGet }
