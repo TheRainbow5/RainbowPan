@@ -296,7 +296,7 @@ export default {
                 fileName: this.fileName,
                 currentDir: this.$store.getters.getCurrentDir
             };
-            this.$axios.post('file/addDir', param, {
+            this.$axios.post('index/addDir', param, {
                 headers: { token: this.token }
             }).then(value => {
                 // console.log(value.data);

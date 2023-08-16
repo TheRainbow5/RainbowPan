@@ -210,8 +210,6 @@ export default {
     props: {},
     data() {
         return {
-            //文件删除
-
             //数组大小=16
             colItems: [],   //存储子文件
             email: '',
@@ -247,8 +245,8 @@ export default {
 
             }).then(() => {
                 //发送删除请求
-                this.$axios.post('operation/delete', colItem, {
-                    headers: { token: this.toekn }
+                this.$axios.post('index/delete', colItem, {
+                    headers: { token: this.token }
                 }).then(value => {
                     console.log(value.data);
                     if (value.data.status === '0') {
@@ -321,8 +319,8 @@ export default {
                 pageSize: this.pageSize
             };
             // console.log(param);
-            this.$axios.post('file/allFiles', param, {
-                headers: { token: this.toekn }
+            this.$axios.post('index/allFiles', param, {
+                headers: { token: this.token }
             }).then(value => {
                 // console.log(value.data);
                 this.totalNum = value.data.data.totalNum;
