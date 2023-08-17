@@ -1,0 +1,19 @@
+# Compiled output
+*.class
+*.jar
+*.war
+*.ear
+
+# IDEs and Editors
+.idea/
+.classpath
+.project
+.settings/
+.metadata/
+
+# Gradle-specific
+.gradle/
+/build/
+
+# Compiled gradle plugins
+buildSrc/build/

@@ -1,0 +1,35 @@
+# Node.js / NPM
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn.lock
+
+# Build / Dist
+/dist/
+/build/
+
+# IDEs and Editors
+.idea/
+.vscode/
+
+# Compiled output
+*.log
+*.cache
+*.bak
+*.log.*
+
+# Temporary files
+*.swp
+*.tmp
+
+# Environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Dependency directory
+.pnp/
+
+# Jest testing framework
+coverage/
