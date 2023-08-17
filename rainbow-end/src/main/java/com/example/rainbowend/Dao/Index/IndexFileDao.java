@@ -28,15 +28,14 @@ public interface IndexFileDao {
      */
     @Insert("INSERT INTO files " +
             "(FILE_ID,FILE_NAME,EMAIL,FILE_PID,FILE_PATH," +
-            "CREATE_TIME,UPDATE_TIME,FOLDER_TYPE,STATUS) " +
+            "FILE_SIZE,CREATE_TIME,UPDATE_TIME,FOLDER_TYPE,STATUS) " +
             "VALUES(#{files.fileId},#{files.fileName},#{files.email},#{files.filePid},#{files.filePath}," +
-            "#{files.createTime},#{files.updateTime},#{files.folderType},#{files.status})")
+            "#{files.fileSize},#{files.createTime},#{files.updateTime},#{files.folderType},#{files.status})")
     int saveDir(@Param("files") Files files);
 
 
     /**
      * 支持分页查询目录下所有子文件
-     *
      * @param filePid
      * @return
      */
@@ -48,7 +47,6 @@ public interface IndexFileDao {
 
     /**
      * 查询一共多少条数据
-     *
      * @param filePid
      * @return
      */
@@ -59,7 +57,6 @@ public interface IndexFileDao {
 
     /**
      * 判断同类型的文件是否重名
-     *
      * @param files
      * @return
      */
@@ -70,7 +67,6 @@ public interface IndexFileDao {
 
     /**
      * 保存文件信息
-     *
      * @param files
      * @return
      */
@@ -80,4 +76,14 @@ public interface IndexFileDao {
             "VALUES(#{files.fileId},#{files.fileName},#{files.email},#{files.filePid},#{files.filePath},#{files.fileSize}," +
             "#{files.createTime},#{files.updateTime},#{files.folderType},#{files.fileCategory},#{files.status})")
     int saveFile(@Param("files") Files files);
+
+
+    /**
+     * 查询父文件夹的大小
+     * @param filePath
+     */
+    @Select("SELECT t.* FROM files t " +
+            "WHERE t.FILE_PATH=#{filePath}")
+    Files getPSize(String filePath);
+
 }

@@ -6,8 +6,8 @@
         <!-- 显示文件 -->
         <div style="width: 100%; height:80%; ">
             <!-- 退回父目录 -->
-            <div class="back-div" @click="backToPreviousView">
-                <div class="back-btn">
+            <div class="back-div" v-show="this.$store.getters.getCurrentDir !== ''">
+                <div class="back-btn" @click="backToPreviousView">
                     <svg t="1691995311568" class="back-btn-icon" viewBox="0 0 1041 1024" version="1.1"
                         xmlns="http://www.w3.org/2000/svg" p-id="5351" width="30" height="30">
                         <path
@@ -162,7 +162,7 @@
 
                         <!-- 弹窗 -->
                         <el-popover popper-class="operation-dialog" :visible-arrow="false" placement="bottom" width="150"
-                            trigger="click">
+                            trigger="hover">
                             <div class="dialog-div">
                                 <!-- 下载 -->
                                 <!-- <a :href="url + 'uploadFile/' + email + '/' + colTtem.fileName" download>
@@ -171,7 +171,7 @@
                                     下载
                                 </button>
                                 <!-- 重命名 -->
-                                <button class="resetname-btn">
+                                <button class="resetname-btn" @click="resetFileName(colTtem)">
                                     重命名
                                 </button>
                                 <!-- 删除 -->
@@ -179,7 +179,7 @@
                                     删除
                                 </button>
                                 <!-- 详细信息 -->
-                                <button class="detail-btn">
+                                <button class="detail-btn" @click="fileDetails(colTtem)">
                                     详细信息
                                 </button>
                             </div>
@@ -234,6 +234,53 @@ export default {
     },
     methods: {
         /**
+         * 文件重命名
+         */
+        resetFileName(colItem) {
+            this.$prompt('请输入文件名称', '文件重命名', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+            }).then(({ value }) => {
+                let param = {
+                    newFileName: value,
+                    colItem, colItem
+                }
+                this.$axios.post('index/resetFileName', param, {
+                    headers: { token: this.token }
+                }).then(value => {
+                    console.log(value.data);
+                    if (value.data.status === '0') {
+                        this.$notify({
+                            title: '文件重命名成功',
+                            position: 'top-right',  //显示位置
+                            duration: 3000,  // 3秒关闭
+                            type: 'success',
+                            offset: 80
+                        });
+                        //刷新页面
+                        this.reload();
+                    }
+                }).catch(() => {
+                    this.$notify({
+                        title: '发生一些错误,请联系管理员',
+                        position: 'top-right',  //显示位置
+                        duration: 3000,  // 3秒关闭
+                        type: 'error',
+                        offset: 80
+                    });
+                });
+            }).catch(() => { });
+        },
+        /**
+         * 查询文件详细信息
+         * 通过vuex状态管理，将数据传回父路由
+         * @param {文件详细信息} colTtem 
+         */
+        fileDetails(colTtem) {
+            this.$store.commit('saveColItem', colTtem);
+            this.$store.commit('changeShowDetail', true);
+        },
+        /**
          * 删除文件
          */
         deleteFile(colItem) {
@@ -242,7 +289,6 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning',
                 center: true,
-
             }).then(() => {
                 //发送删除请求
                 this.$axios.post('index/delete', colItem, {
@@ -261,15 +307,7 @@ export default {
                         this.reload();
                     }
                 })
-            }).catch(() => {
-                this.$notify({
-                    title: '发生一些错误，请联系管理员!',
-                    position: 'top-right',  //显示位置
-                    duration: 3000,  // 3秒关闭
-                    type: 'error',
-                    offset: 80
-                });
-            });
+            }).catch(() => { });
         },
         /**
          * 退回上一个目录
@@ -279,7 +317,7 @@ export default {
             let absolutePath = this.$store.getters.getAbsolutePath;
             let currentDir = this.$store.getters.getCurrentDir;
             //退回时修改的全路径和当前目录
-            let modifiedAbsolutePath = absolutePath.replace("/" + currentDir, "");
+            let modifiedAbsolutePath = absolutePath.substring(0, absolutePath.lastIndexOf('/'));
             let partsCurrentDir = absolutePath.replace("/" + currentDir, "").split('/');
             let modifiedCurrentDir = partsCurrentDir[partsCurrentDir.length - 1];
             //修改全路径和当前目录到vuex状态管理

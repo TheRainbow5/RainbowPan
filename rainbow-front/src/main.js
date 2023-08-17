@@ -13,8 +13,8 @@ import vuex from 'vuex'
 // 导入共用组件
 import global from './global/index.js'
 import VueDialogs from 'vue-dialogs';
-//导入全局api
-// import api from './api/index.js'
+//导入全局api，会出现跨域问题
+// import api from './api/request'
 
 //注册vuex
 Vue.use(vuex)

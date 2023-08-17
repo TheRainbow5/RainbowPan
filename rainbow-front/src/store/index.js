@@ -9,7 +9,9 @@ const store = new Vuex.Store({
     // 存储全局变量
     state: {
         currentDir: '',   //默认目录为用户的根目录
-        absolutePath: ''   //全路径
+        absolutePath: '',   //全路径
+        colItem: undefined,
+        showDetail: false,
     },
     // 修改全局变量必须通过mutations中的方法
     mutations: {
@@ -20,7 +22,7 @@ const store = new Vuex.Store({
          */
         saveCurrentDir(state, payload) {
             state.currentDir = payload;
-            // console.log("当前目录：" + state.currentDir);
+            console.log("当前目录：" + state.currentDir);
         },
         saveAbsolutePath(state, payload) {
             if (payload == '') {
@@ -28,13 +30,23 @@ const store = new Vuex.Store({
             } else {
                 state.absolutePath += "/" + payload;
             }
-            // console.log("当前全路径：" + state.absolutePath);
+            console.log("当前全路径：" + state.absolutePath);
         },
         //退回的全路径
         modifiedAbsolutePath(state, payload) {
             state.absolutePath = payload;
-            // console.log("当前全路径：" + state.absolutePath);
-        }
+            console.log("当前全路径：" + state.absolutePath);
+        },
+        //
+        saveColItem(state, payload) {
+            state.colItem = payload;
+            // console.log(state.colItem);
+        },
+        changeShowDetail(state, payload) {
+            state.showDetail = payload;
+        },
+
+
 
     },
     // 获取属性值
@@ -47,6 +59,13 @@ const store = new Vuex.Store({
         getAbsolutePath: function (state) {
             return state.absolutePath;
         },
+        getColItem: function (state) {
+            return state.colItem;
+        },
+        getShowDetail(state) {
+            return state.showDetail;
+        },
+
 
     },
     // 异步方法用actions

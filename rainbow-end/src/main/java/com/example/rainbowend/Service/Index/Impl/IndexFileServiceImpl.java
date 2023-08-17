@@ -63,15 +63,14 @@ public class IndexFileServiceImpl implements IndexFileService {
                 }
             } else {
                 // 在数据库中保存文件夹信息
-                int i = indexFileDao.saveDir(files);
-                if (i > 0) {
+                if (indexFileDao.saveDir(files) > 0) {
                     // 创建本地文件夹
                     if (file.mkdir() && file.exists()) {
                         return ResponseResult.ok("文件夹创建成功", map);  // 返回存储路径
                     }
                 }
                 // 创建失败，抛出异常
-                throw new RuntimeException("无法创建文件夹");
+                throw new RuntimeException("本地无法创建文件夹");
             }
         } catch (Exception e) {
             // 处理异常并回滚事务
@@ -130,7 +129,6 @@ public class IndexFileServiceImpl implements IndexFileService {
         Map<String, Object> resultMap = new HashMap<>();
         String filePid = files.getFilePid();
         String fileName = files.getFileName();
-
         try {
             // 构建本地文件对象路径
             File localFile = new File(UserRoot + filePid, fileName);
@@ -152,9 +150,11 @@ public class IndexFileServiceImpl implements IndexFileService {
                     }
                     // 将上传的文件保存到本地
                     multipartFile.transferTo(localFile);
+
                     return ResponseResult.ok("文件夹创建成功", resultMap);
                 }
             }
+
             throw new Exception();  // 如果前面的逻辑不满足，抛出通用异常
         } catch (IOException e) {
             handleException(e);

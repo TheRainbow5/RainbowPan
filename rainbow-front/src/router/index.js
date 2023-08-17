@@ -19,7 +19,6 @@ const routes = [
   // 首页
   {
     path: '/index',
-    name: 'index',
     component: () => import('@/views/IndexView.vue'),
     children: [
       { path: '/', name: 'myPanPage', component: () => import('@/components/Index/MyPan.vue') },

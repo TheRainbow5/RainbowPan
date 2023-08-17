@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.rainbowend.Entity.Files;
 import com.example.rainbowend.Entity.ResponseResult;
 import com.example.rainbowend.Service.Index.IndexFileService;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,13 +27,14 @@ import java.util.UUID;
  * @DATE:2023/8/10 0010
  */
 @RestController
-@RequestMapping("file")
+@RequestMapping("index")
 public class IndexFilesController {
     @Resource
     private IndexFileService indexFileService;
 
     /**
      * 创建新文件夹
+     *
      * @param jsonObject 包含文件夹相关信息的 JSON 对象
      * @return 创建结果的 ResponseResult 对象
      */
@@ -42,8 +42,9 @@ public class IndexFilesController {
     public ResponseResult createNewDir(@RequestBody JSONObject jsonObject) {
         // 解析必要参数
         String fileName = jsonObject.getString("fileName");  // 文件名
-        String currentDir = jsonObject.getString("currentDir");  // 当前目录
         String email = jsonObject.getString("email");  // 邮箱
+        String filePid = email + jsonObject.getString("absolutePath");  // 父路径
+        String filePath = filePid + "/" + fileName;   //文件存储的全路径
 
         // 生成文件ID
         String fileId = UUID.randomUUID().toString().replace("-", "");
@@ -52,12 +53,6 @@ public class IndexFilesController {
         if (fileName.equals("")) {
             fileName = "未命名文件夹";
         }
-
-        // 构建父路径
-        String filePid = (currentDir.equals("")) ? (email + currentDir) : (email + "/" + currentDir);
-
-        // 构建文件存储路径（前端访问路径）
-        String filePath = filePid + "/" + fileName;
 
         // 获取创建时间和更新时间
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -75,6 +70,7 @@ public class IndexFilesController {
         files.setEmail(email);
         files.setFilePid(filePid);
         files.setFilePath(filePath);
+        files.setFileSize("0 B");
         files.setCreateTime(createTime);
         files.setUpdateTime(updateTime);
         files.setFolderType(folderType);
@@ -107,7 +103,6 @@ public class IndexFilesController {
     /**
      * 上传文件
      */
-    @Transactional(rollbackFor = Exception.class)
     @PostMapping("uploadFile")
     public ResponseResult uploadNewFile(HttpServletRequest request) {
         //解析必要参数
@@ -120,12 +115,12 @@ public class IndexFilesController {
         String fileId = UUID.randomUUID().toString().replace("-", "");  //文件id
         String email = mulRequest.getParameter("email");   //邮箱
         String fileName = multipartFile.getOriginalFilename();   //文件名
-        String currentDir = mulRequest.getParameter("currentDir");  //当前目录
+        String absolutePath = mulRequest.getParameter("absolutePath");  //当前目录
         String filePid;   //父目录
-        if (currentDir.equals("")) {
+        if (absolutePath.equals("")) {
             filePid = email;   //父目录
         } else {
-            filePid = email + "/" + currentDir;   //父目录
+            filePid = email + absolutePath;   //父目录
         }
         String filePath = filePid + "/" + fileName;      //文件存储路径（前端访问路径）
         String fileSize = formatFileSize(multipartFile.getSize());   //文件大小

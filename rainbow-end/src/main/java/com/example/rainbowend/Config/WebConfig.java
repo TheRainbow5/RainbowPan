@@ -26,7 +26,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     /**
      * token校验拦截器
-     *
      * @param registry
      */
     @Override

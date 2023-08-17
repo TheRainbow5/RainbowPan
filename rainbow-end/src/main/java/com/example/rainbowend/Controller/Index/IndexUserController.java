@@ -28,7 +28,6 @@ public class IndexUserController {
 
     /**
      * 获取用户信息
-     *
      * @param jsonObject 包含用户信息的JSON对象
      * @return 响应结果，包含用户信息
      */
@@ -62,7 +61,6 @@ public class IndexUserController {
      * 根据用户信息，返回头像
      * 1、获取邮箱
      * 2、根据邮箱查询头像访问路径
-     *
      * @param jsonObject
      * @return
      */
@@ -72,5 +70,19 @@ public class IndexUserController {
         String email = jsonObject.getString("email");
 
         return indexUserService.getUserImageUrl(email);
+    }
+
+
+    /**
+     * 根据用户信息，注销账号
+     * @param jsonObject 携带的用户信息
+     * @return 响应结果
+     */
+    @PostMapping("logoffUser")
+    public ResponseResult logoffUser(@RequestBody JSONObject jsonObject) {
+        //解析参数
+        String email = jsonObject.getString("email");
+        System.out.println(email);
+        return indexUserService.logoffUser(email);
     }
 }
