@@ -18,24 +18,24 @@
             </div>
             <!-- 内容 -->
             <el-row :gutter="20">
-                <el-col :span="8" v-for="colTtem in  colItems " :key="colTtem.id">
+                <el-col :span="8" v-for="colItem in  colItems " :key="colItem.id">
                     <button class="file-btn">
                         <!-- 目录 -->
-                        <svg v-if="colTtem.folderType == 1" t="1691739427959" class="dir" viewBox="0 0 1024 1024"
+                        <svg v-if="colItem.folderType == 1" t="1691739427959" class="dir" viewBox="0 0 1024 1024"
                             version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="18064" width="30" height="30">
                             <path
                                 d="M855.04 385.024q19.456 2.048 38.912 10.24t33.792 23.04 21.504 37.376 2.048 54.272q-2.048 8.192-8.192 40.448t-14.336 74.24-18.432 86.528-19.456 76.288q-5.12 18.432-14.848 37.888t-25.088 35.328-36.864 26.112-51.2 10.24l-567.296 0q-21.504 0-44.544-9.216t-42.496-26.112-31.744-40.96-12.288-53.76l0-439.296q0-62.464 33.792-97.792t95.232-35.328l503.808 0q22.528 0 46.592 8.704t43.52 24.064 31.744 35.84 12.288 44.032l0 11.264-53.248 0q-40.96 0-95.744-0.512t-116.736-0.512-115.712-0.512-92.672-0.512l-47.104 0q-26.624 0-41.472 16.896t-23.04 44.544q-8.192 29.696-18.432 62.976t-18.432 61.952q-10.24 33.792-20.48 65.536-2.048 8.192-2.048 13.312 0 17.408 11.776 29.184t29.184 11.776q31.744 0 43.008-39.936l54.272-198.656q133.12 1.024 243.712 1.024l286.72 0z"
                                 p-id="18065" fill="#8a8a8a"></path>
                         </svg>
                         <!-- 视频-->
-                        <svg v-if="colTtem.fileCategory === '0'" t="1691912832519" class="dir" viewBox="0 0 1024 1024"
+                        <svg v-if="colItem.fileCategory === '0'" t="1691912832519" class="dir" viewBox="0 0 1024 1024"
                             version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6168" width="30" height="30">
                             <path
                                 d="M960.43008 332.778496l-133.021696 45.024256L827.408384 260.871168c0-23.40352-18.967552-42.376192-42.372096-42.376192l-114.55488 0L253.991936 218.494976 73.79968 218.494976c-23.40352 0-42.376192 18.971648-42.376192 42.376192l0 349.394944 0 132.69504-0.556032 24.56064c0 23.399424 18.971648 42.376192 42.376192 42.376192L555.39712 809.897984l229.640192 0c23.40352 0 42.372096-18.975744 42.372096-42.376192l0-14.076928 0-66.9952 133.021696 45.02016c23.40352 0 42.376192-18.971648 42.376192-42.372096L1002.807296 375.154688C1002.805248 351.751168 983.8336 332.778496 960.43008 332.778496zM563.525632 531.45088 403.787776 651.986944c-3.692544 2.772992-8.1408 4.202496-12.58496 4.202496-3.182592 0-6.366208-0.735232-9.32352-2.2016-7.07584-3.509248-11.561984-10.77248-11.561984-18.683904L370.317312 401.570816c0-7.790592 4.365312-14.97088 11.298816-18.558976 6.892544-3.550208 15.276032-2.977792 21.6576 1.508352L563.01568 497.717248c5.44256 3.871744 8.70912 10.075136 8.809472 16.720896C571.925504 521.12896 568.84736 527.4112 563.525632 531.45088z"
                                 fill="#FF9000" p-id="6169"></path>
                         </svg>
                         <!-- 音频 -->
-                        <svg v-if="colTtem.fileCategory === '1'" t="1691912905596" class="dir" viewBox="0 0 1024 1024"
+                        <svg v-if="colItem.fileCategory === '1'" t="1691912905596" class="dir" viewBox="0 0 1024 1024"
                             version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1535" width="30" height="30">
                             <path
                                 d="M481 511.4c49.4 0 89.5 32.1 89.5 71.6 0 39.5-40.2 71.6-89.5 71.6s-89.5-32.1-89.5-71.6c0-39.5 40.1-71.6 89.5-71.6m0-35.8c-69.2 0-125.3 48.1-125.3 107.4 0 59.3 56.1 107.4 125.3 107.4s125.3-48 125.3-107.4c0-59.3-56.1-107.4-125.3-107.4zM217.4 442.8c-0.8 0-1.5-0.1-2.3-0.3-4.8-1.2-7.6-6.1-6.4-10.9 1.4-5.2 2.9-10.3 4.5-15.4 1.5-4.7 6.5-7.3 11.2-5.8 4.7 1.5 7.3 6.5 5.8 11.2-1.5 4.8-2.9 9.6-4.2 14.5-1 4-4.6 6.7-8.6 6.7z m17.8-49.7c-1.3 0-2.5-0.3-3.7-0.8-4.5-2.1-6.5-7.4-4.4-11.9 30.4-65.9 83.1-119.6 148.5-151.2 4.5-2.2 9.8-0.3 12 4.2 2.2 4.5 0.3 9.8-4.2 12-61.6 29.8-111.4 80.5-140 142.6a9.16 9.16 0 0 1-8.2 5.1z"
@@ -46,9 +46,9 @@
                         </svg>
                         <!-- 图片 -->
                         <img class="dir" style="width: 15%; height: 40px; margin-left: 17px;"
-                            v-if="colTtem.fileCategory === '2'" :src="url + 'uploadFile/' + colTtem.filePath">
+                            v-if="colItem.fileCategory === '2'" :src="url + 'uploadFile/' + colItem.filePath">
                         <!-- pdf -->
-                        <svg v-if="colTtem.fileCategory === '3'" t="1691935955004" class="dir" viewBox="0 0 1024 1024"
+                        <svg v-if="colItem.fileCategory === '3'" t="1691935955004" class="dir" viewBox="0 0 1024 1024"
                             version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12906" width="30" height="30">
                             <path
                                 d="M534.78 74.67h57.71v91.61c108.81 0.61 217.73-1.12 326.43 0.51 23.41-2.24 41.74 16 39.39 39.39 1.73 190.15-0.41 380.39 1 570.64-1 20.56 2 43.36-9.77 61.58-14.86 10.78-34.2 9.36-51.6 10.18-101.79-0.51-203.58-0.31-305.47-0.31v101.8h-63.3C374 921.77 218.61 895.92 63.38 868.64q-0.15-356.22 0-712.33c157.07-27.18 314.13-54.87 471.4-81.64z"
@@ -64,7 +64,7 @@
                                 fill="#FFFFFF" p-id="12910"></path>
                         </svg>
                         <!-- word文档 -->
-                        <svg v-if="colTtem.fileCategory === '4'" t="1691936014185" class="dir" viewBox="0 0 1024 1024"
+                        <svg v-if="colItem.fileCategory === '4'" t="1691936014185" class="dir" viewBox="0 0 1024 1024"
                             version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1641" width="30" height="30">
                             <path
                                 d="M959.16 187.68c2.14-23.23-16.1-41.26-39.32-38.92-108.92-1.76-217.84 0-326.84-0.61V66.64h-60.95C375.86 94.45 219.57 121 63.38 148.35v713c155.38 27.2 310.85 53.18 465.93 81.51H593v-81.51c102 0 203.87-0.2 305.86 0.31 17.32-0.82 36.58 0.51 51.45-10.09 11.92-18.24 8.87-41.06 9.89-61.64-1.45-200.72 0.69-401.53-1.04-602.25z"
@@ -74,7 +74,7 @@
                                 fill="#FFFFFF" p-id="1643"></path>
                         </svg>
                         <!-- excel -->
-                        <svg v-if="colTtem.fileCategory === '5'" t="1691936045088" class="dir" viewBox="0 0 1024 1024"
+                        <svg v-if="colItem.fileCategory === '5'" t="1691936045088" class="dir" viewBox="0 0 1024 1024"
                             version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1786" width="30" height="30">
                             <path
                                 d="M533.58 75H594v81.31c101.74 0 203.47 0.2 305.21-0.31 17.18 0.71 36.09-0.51 51 9.76 10.47 15 9.25 34.15 10 51.43q-0.76 264.66-0.2 529.12c-0.51 29.58 2.74 59.76-3.45 88.93-4.14 21.1-29.56 21.61-46.56 22.32-105.3 0.31-210.69-0.2-316.09 0V949h-63.07c-154.9-28.15-310.1-54.17-465.2-81.31V156.37C221.66 129.23 377.67 102.51 533.58 75z"
@@ -90,7 +90,7 @@
                                 fill="#FFFFFF" p-id="1790"></path>
                         </svg>
                         <!-- txt -->
-                        <svg v-if="colTtem.fileCategory === '6'" t="1691918416144" class="dir" viewBox="0 0 1024 1024"
+                        <svg v-if="colItem.fileCategory === '6'" t="1691918416144" class="dir" viewBox="0 0 1024 1024"
                             version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6166" width="30" height="30">
                             <path
                                 d="M535.94 71.69h57.58v91.4c108.56 0.61 217.22-1.12 325.68 0.51 23.36-2.23 41.64 15.95 39.3 39.3 1.73 189.71-0.41 379.52 1 569.33-1 20.51 2 43.26-9.75 61.44-14.83 10.76-34.12 9.34-51.48 10.16-101.56-0.51-203.11-0.31-304.77-0.31v101.55h-63.15C375.59 916.83 220.5 891 65.63 863.82q-0.15-355.4 0-710.69C222.34 126 379 98.39 535.94 71.69z"
@@ -100,7 +100,7 @@
                                 fill="#FFFFFF" p-id="6168"></path>
                         </svg>
                         <!-- code -->
-                        <svg v-if="colTtem.fileCategory === '7'" t="1691918486942" class="dir" viewBox="0 0 1024 1024"
+                        <svg v-if="colItem.fileCategory === '7'" t="1691918486942" class="dir" viewBox="0 0 1024 1024"
                             version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9180" width="30" height="30">
                             <path
                                 d="M981.333333 276.053333V981.333333a42.666667 42.666667 0 0 1-42.666666 42.666667H85.333333a42.666667 42.666667 0 0 1-42.666666-42.666667V42.666667a42.666667 42.666667 0 0 1 42.666666-42.666667h619.946667z"
@@ -125,7 +125,7 @@
                                 fill="#FFFFFF" p-id="9187"></path>
                         </svg>
                         <!-- 压缩包 -->
-                        <svg v-if="colTtem.fileCategory === '8'" t="1691936092018" class="dir" viewBox="0 0 1024 1024"
+                        <svg v-if="colItem.fileCategory === '8'" t="1691936092018" class="dir" viewBox="0 0 1024 1024"
                             version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1933" width="30" height="30">
                             <path
                                 d="M714.48 782.13a22.4 22.4 0 0 0 3.09-12.21q0-8.22-4.06-13.27a18.26 18.26 0 0 0-11.46-6.38q-3.7-0.55-22.19-0.55h-23.74V791h22.5q21.89 0 27.33-2a16.51 16.51 0 0 0 8.53-6.87zM512.4 820.54h41.1l-20.75-60.38-20.35 60.38z"
@@ -149,15 +149,15 @@
                                 fill="#FFFFFF" p-id="1940"></path>
                         </svg>
                         <!-- 其他 -->
-                        <svg v-if="colTtem.fileCategory === '9'" t="1691931311277" class="dir" viewBox="0 0 1025 1024"
+                        <svg v-if="colItem.fileCategory === '9'" t="1691931311277" class="dir" viewBox="0 0 1025 1024"
                             version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11578" width="30" height="30">
                             <path
                                 d="M525.354 79.891c25.407 0 46.004 20.583 46.004 45.974v204.803c0 19.043 15.447 34.481 34.503 34.481h218.694c25.407 0 46.003 20.583 46.003 45.974v420.448c0 69.825-56.64 126.429-126.51 126.429H249.51C179.64 958 123 901.396 123 831.57V206.32c0-69.825 56.64-126.429 126.51-126.429h275.844zM492.05 751.116c-9.546 0-18.137 2.86-24.82 9.536-6.682 6.198-10.023 14.303-10.023 24.316 0 9.536 3.341 17.641 10.024 24.317 6.682 6.675 15.273 10.012 24.82 10.012 9.545 0 18.137-3.337 24.819-9.536 6.682-6.675 10.5-14.78 10.5-24.793s-3.34-18.118-10.023-24.316c-6.682-6.676-15.273-9.536-25.297-9.536z m8.592-310.327c-35.32 0-63.004 10.013-83.05 30.515-18.955 18.935-28.949 44.263-29.981 76.39a60.36 60.36 0 0 0-0.019 1.33c0 13.8 11.188 24.987 24.988 24.987 13.783 0 24.999-11.094 25.149-24.877 0.01-0.955 0.021-1.571 0.033-1.848 0.759-18.082 5.013-32.284 12.763-42.606 9.546-13.827 25.297-20.503 46.776-20.503 17.182 0 31.024 4.768 40.57 14.304 9.069 9.536 13.842 22.41 13.842 39.097 0 12.397-4.773 23.84-13.365 34.806l-8.114 9.06c-29.592 26.223-47.73 45.772-53.935 59.122-6.682 12.396-9.546 27.654-9.546 45.295v14.587c0 14.103 11.433 25.536 25.536 25.536 14.103 0 25.535-11.433 25.535-25.536v-14.587c0-11.443 2.387-21.932 7.637-31.468 4.296-8.582 10.978-17.165 20.047-24.793 22.433-19.549 35.797-31.946 40.093-37.19 11.932-15.258 18.137-34.806 18.137-58.17 0-28.607-9.546-51.493-28.638-68.18-19.092-17.165-43.911-25.27-74.458-25.27zM619.837 76.995a18.4 18.4 0 0 1 12.725 5.109l234.743 224.735c7.34 7.028 7.595 18.675 0.567 26.016a18.4 18.4 0 0 1-13.291 5.675H633.637c-17.783 0-32.2-14.416-32.2-32.2V95.395c0-10.162 8.238-18.4 18.4-18.4z"
                                 fill="#8a8a8a" p-id="11579"></path>
                         </svg>
                         <!-- 文件 -->
-                        <div class="dir-content" v-on:dblclick="subFiles(colTtem)">
-                            {{ colTtem.fileName }}
+                        <div class="dir-content" v-on:dblclick="subFiles(colItem)">
+                            {{ colItem.fileName }}
                         </div>
 
                         <!-- 弹窗 -->
@@ -165,21 +165,20 @@
                             trigger="hover">
                             <div class="dialog-div">
                                 <!-- 下载 -->
-                                <!-- <a :href="url + 'uploadFile/' + email + '/' + colTtem.fileName" download>
-                                </a> -->
-                                <button class="download-btn">
+
+                                <button class="download-btn" @click="downloadFile(colItem)">
                                     下载
                                 </button>
                                 <!-- 重命名 -->
-                                <button class="resetname-btn" @click="resetFileName(colTtem)">
+                                <button class="resetname-btn" @click="resetFileName(colItem)">
                                     重命名
                                 </button>
                                 <!-- 删除 -->
-                                <button class="delete-btn" @click="deleteFile(colTtem)">
+                                <button class="delete-btn" @click="deleteFile(colItem)">
                                     删除
                                 </button>
                                 <!-- 详细信息 -->
-                                <button class="detail-btn" @click="fileDetails(colTtem)">
+                                <button class="detail-btn" @click="fileDetails(colItem)">
                                     详细信息
                                 </button>
                             </div>
@@ -233,6 +232,67 @@ export default {
         this.getAllFiles();
     },
     methods: {
+
+        /**
+         * 下载文件
+         * @param {文件属性} colItem 
+        */
+        downloadFile(colItem) {
+            let param = {
+                colItem: colItem
+            }
+            this.$axios.post('index/download', param, {
+                responseType: 'blob',    //响应文件流为二进制
+                headers: { token: this.token }
+            }).then(value => {
+                console.log(value);
+                if (colItem.folderType == 1) {  //文件夹
+                    if (value.status == 200) {
+                        var blob = new Blob([value.data]);     //响应的二进制文件流
+                        // console.log(value.data);
+                        const url = window.URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', colItem.fileName + '.zip');
+                        document.body.appendChild(link);
+                        link.click();
+                        // 释放URL 对象
+                        URL.revokeObjectURL(link.href);
+                        document.body.removeChild(link);
+                    }
+                } else if (colItem.folderType == 0) {   //下载文件
+                    var blob = new Blob([value.data]);
+                    // console.log(value.data);
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', colItem.fileName);
+                    document.body.appendChild(link);
+                    link.click();
+                    // 释放URL 对象
+                    URL.revokeObjectURL(link.href);
+                    document.body.removeChild(link);
+                } else {
+                    this.$notify({
+                        title: '发生一些错误,请联系管理员',
+                        position: 'top-right',  //显示位置
+                        duration: 3000,  // 3秒关闭
+                        type: 'error',
+                        offset: 80
+                    });
+                }
+
+            }).catch(() => {
+                this.$notify({
+                    title: '发生一些错误,请联系管理员',
+                    position: 'top-right',  //显示位置
+                    duration: 3000,  // 3秒关闭
+                    type: 'error',
+                    offset: 80
+                });
+            });
+        },
+
         /**
          * 文件重命名
          */
@@ -282,10 +342,10 @@ export default {
         /**
          * 查询文件详细信息
          * 通过vuex状态管理，将数据传回父路由
-         * @param {文件详细信息} colTtem 
+         * @param {文件详细信息} colItem 
          */
-        fileDetails(colTtem) {
-            this.$store.commit('saveColItem', colTtem);
+        fileDetails(colItem) {
+            this.$store.commit('saveColItem', colItem);
             this.$store.commit('changeShowDetail', true);
         },
         /**
