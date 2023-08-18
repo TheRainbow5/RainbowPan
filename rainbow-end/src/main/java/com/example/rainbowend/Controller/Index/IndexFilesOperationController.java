@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.rainbowend.Entity.Files;
 import com.example.rainbowend.Entity.ResponseResult;
 import com.example.rainbowend.Service.Index.IndexFileOperationService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Rainbow
@@ -24,7 +28,8 @@ import java.io.IOException;
 public class IndexFilesOperationController {
     @Resource
     private IndexFileOperationService indexFileOperationService;
-
+    @Value("${UserRoot}")
+    private String UserRoot;
     /**
      * 删除文件
      *
@@ -41,7 +46,6 @@ public class IndexFilesOperationController {
 
     /**
      * 文件重命名
-     *
      * @param jsonObject
      * @return
      */
@@ -62,5 +66,26 @@ public class IndexFilesOperationController {
         }
 
     }
+
+    /**
+     * 文件下载
+     * @param jsonObject 文件属性
+     * @return
+     */
+    @PostMapping("download")
+    public ResponseEntity downLoadFile(@RequestBody JSONObject jsonObject){
+        System.out.println(jsonObject);
+        // 将JSON字符串转换为指定类的对象
+        String JSONStr = JSON.toJSONString(jsonObject.getJSONObject("colItem"));
+        Files files = JSON.parseObject(JSONStr, Files.class);
+        //判断是下载文件/文件夹
+        if(files.getFolderType()==1){   //目录
+            return indexFileOperationService.downloadDir(files);
+        }else{  //文件
+            return indexFileOperationService.downloadFile(files);
+        }
+    }
+
+
 
 }

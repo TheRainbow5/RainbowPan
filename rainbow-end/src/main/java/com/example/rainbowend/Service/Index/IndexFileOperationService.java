@@ -2,6 +2,7 @@ package com.example.rainbowend.Service.Index;
 
 import com.example.rainbowend.Entity.Files;
 import com.example.rainbowend.Entity.ResponseResult;
+import org.springframework.http.ResponseEntity;
 
 /**
  * Rainbow
@@ -14,4 +15,8 @@ public interface IndexFileOperationService {
     ResponseResult resetFileName(String newFileName, Files files);
 
     ResponseResult resetFolderName(String newFileName, Files files);
+
+    ResponseEntity downloadDir(Files files);
+
+    ResponseEntity downloadFile(Files files);
 }

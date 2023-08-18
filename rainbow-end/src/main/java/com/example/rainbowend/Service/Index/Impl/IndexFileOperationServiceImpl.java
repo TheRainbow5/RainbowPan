@@ -4,21 +4,26 @@ import com.example.rainbowend.Controller.Index.IndexFilesOperationController;
 import com.example.rainbowend.Dao.Index.IndexFileOperationDao;
 import com.example.rainbowend.Entity.Files;
 import com.example.rainbowend.Entity.ResponseResult;
+import com.example.rainbowend.Entity.User;
 import com.example.rainbowend.Service.Index.IndexFileOperationService;
 import com.example.rainbowend.Utils.FileOperationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Rainbow
@@ -229,6 +234,98 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
         //将subList中的元素移动到newFileList
         newFileList.addAll(subFilesList);
     }
+
+
+    /**
+     * 下载文件夹
+     * @param files
+     * @return
+     */
+    @Override
+    public ResponseEntity downloadDir(Files files) {
+        try{
+            //判断是否存在该文件
+            Files exist = indexFileOperationDao.exist(files.getFileId());
+            if (exist == null) {
+                return ResponseEntity.notFound().build();  //资源未找到
+            }
+
+            ByteArrayOutputStream zipBytes = new ByteArrayOutputStream();
+            try (ZipOutputStream zipOut = new ZipOutputStream(zipBytes)) {
+                //文件夹对象
+                File folderToZip = new File(UserRoot+files.getFilePath());
+                //文件压缩
+                addFilesToZip(folderToZip, folderToZip.getName(), zipOut);
+            }
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(zipBytes.toByteArray());
+
+
+        }catch (Exception e){
+            handleExceptionAndRollback(e);
+            return ResponseEntity.status(0).build();
+        }
+    }
+
+    /**
+     * 压缩文件夹
+     * @param file
+     * @param parentPath
+     * @param zipOut
+     * @throws IOException
+     */
+    private void addFilesToZip(File file, String parentPath, ZipOutputStream zipOut) throws IOException {
+        byte[] buffer = new byte[1024];
+        if (file.isDirectory()) {
+            for (File innerFile : file.listFiles()) {
+                addFilesToZip(innerFile, parentPath + File.separator + file.getName(), zipOut);
+            }
+        } else {
+            FileInputStream fis = new FileInputStream(file);
+            zipOut.putNextEntry(new ZipEntry(parentPath + File.separator + file.getName()));
+            int length;
+            while ((length = fis.read(buffer)) > 0) {
+                zipOut.write(buffer, 0, length);
+            }
+            fis.close();
+        }
+    }
+
+    /**
+     * 下载文件
+     * @param files
+     * @return
+     */
+    @Override
+    public ResponseEntity downloadFile(Files files) {
+        try {
+            //判断是否存在该文件
+            Files exist = indexFileOperationDao.exist(files.getFileId());
+            if (exist == null) {
+                return ResponseEntity.notFound().build();  //资源未找到
+            }
+            //创建文件流对象
+            File file = new File(UserRoot + files.getFilePath());
+            if (!file.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+            //获取文件输入流
+            InputStream inputStream = new FileInputStream(file);
+            InputStreamResource inputStreamResource = new InputStreamResource(inputStream);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(inputStreamResource);
+
+        } catch (Exception e) {
+            handleExceptionAndRollback(e);
+            return ResponseEntity.status(0).build();
+        }
+    }
+
 
     /**
      * 处理异常并执行事务回滚
