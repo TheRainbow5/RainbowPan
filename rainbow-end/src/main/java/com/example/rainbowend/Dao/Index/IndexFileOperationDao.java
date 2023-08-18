@@ -12,8 +12,6 @@ import java.util.List;
  */
 @Mapper
 public interface IndexFileOperationDao {
-
-
     /**
      * 查看是否存在
      *
@@ -39,17 +37,8 @@ public interface IndexFileOperationDao {
      * @return
      */
     @Delete("DELETE FROM files t " +
-            "WHERE t.FILE_PATH=#{filePath} OR t.FILE_PID=#{filePath}")
+            "WHERE t.FILE_PATH=#{filePath}")
     int delete(String filePath);
-
-    /**
-     * 删除子文件
-     *
-     * @param filePid
-     */
-    @Delete("DELETE FROM files t " +
-            "WHERE t.FILE_PID=#{filePid}")
-    int deleteFile(String filePid);
 
 
     /**
@@ -64,29 +53,19 @@ public interface IndexFileOperationDao {
     Files existFile(String filePid, String newFileName);
 
     /**
-     * 修改子文件的父路径
-     *
-     * @param oldSubFilePid
-     * @param newSubFilePid
-     * @return
-     */
-    @Update("UPDATE files t " +
-            "SET t.FILE_PID=#{newSubFilePid} " +
-            "WHERE t.FILE_PID=#{oldSubFilePid}")
-    int resetSubFilePid(String oldSubFilePid, String newSubFilePid);
-
-    /**
      * 根据FILE_PATH查询子文件
+     *
      * @param oldFilePath
      * @return 返回List集合
      */
     @Select("SELECT * FROM files t " +
             "WHERE t.FILE_PID=#{oldFilePath}")
-    List<Files> gertSubFiles(String oldFilePath);
+    List<Files> getSubFiles(String oldFilePath);
 
 
     /**
      * 修改子文件路径
+     *
      * @param item 子文件对象
      * @return
      */
@@ -97,11 +76,12 @@ public interface IndexFileOperationDao {
 
     /**
      * 修改当前文件夹名称
+     *
      * @param files
      * @return
      */
     @Update("UPDATE files t " +
             "SET t.FILE_NAME=#{file.fileName},t.FILE_PATH=#{file.filePath} " +
             "WHERE t.FILE_ID=#{file.fileId}")
-    int resetDir(@Param("file")Files files);
+    int resetDir(@Param("file") Files files);
 }

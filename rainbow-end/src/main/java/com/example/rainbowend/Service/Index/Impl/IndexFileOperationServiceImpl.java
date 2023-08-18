@@ -4,7 +4,6 @@ import com.example.rainbowend.Controller.Index.IndexFilesOperationController;
 import com.example.rainbowend.Dao.Index.IndexFileOperationDao;
 import com.example.rainbowend.Entity.Files;
 import com.example.rainbowend.Entity.ResponseResult;
-import com.example.rainbowend.Entity.User;
 import com.example.rainbowend.Service.Index.IndexFileOperationService;
 import com.example.rainbowend.Utils.FileOperationUtil;
 import org.slf4j.Logger;
@@ -50,33 +49,53 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
      * 不存在：事务回滚，抛出异常
      * 5、存在：删除文件
      */
-    @Transactional(rollbackFor = Exception.class)
     @Override
-    public ResponseResult deleteFileAndFolder(String fileId, String filePath) {
+    public ResponseResult deleteFileAndFolder(Files files) {
+        String filePath = files.getFilePath();
         try {
             //1、判断文件是否存在
-            Files files = indexFileOperationDao.exist(fileId);
-            if (files != null) {   //文件存在
-                //2、删除数据库中数据（文件夹和子文件）
-                int num = indexFileOperationDao.delete(filePath);
-                if (num > 0) {
-                    //3、删除本地文件
-                    if (deleteLocalFile(UserRoot + filePath)) {
-                        return ResponseResult.ok("删除成功");
-                    } else {
-                        throw new IOException("本地文件删除失败");
-                    }
+            Files existingFile = indexFileOperationDao.exist(files.getFileId());
+            if (existingFile != null) {   //文件存在
+
+                //2、递归删除数据
+                deleteFile(filePath);
+                indexFileOperationDao.delete(filePath);
+
+                //3、递归删除本地文件
+                if (deleteLocalFile(UserRoot + filePath)) {
+                    return ResponseResult.ok("删除成功");
                 }
             }
-            return ResponseResult.error("发生一些错误，请联系管理员");
+            throw new IOException("本地文件删除失败");
         } catch (Exception e) {
             handleExceptionAndRollback(e);
             return ResponseResult.error("发生一些错误，请联系管理员");
         }
+
     }
 
     /**
-     * 删除本地文件
+     * 递归删除数据库中数据
+     *
+     * @param filePath
+     */
+    private void deleteFile(String filePath) {
+        List<Files> subFilesList = indexFileOperationDao.getSubFiles(filePath);
+        if (subFilesList != null) {
+            for (Files files : subFilesList) {
+                String subFileName = files.getFileName();
+                String subFilePath = filePath + "/" + subFileName;
+                if (files.getFolderType() == 1) {  //目录
+                    deleteFile(subFilePath);
+                }
+                //删除数据
+                indexFileOperationDao.delete(subFilePath);
+            }
+        }
+    }
+
+    /**
+     * 递归删除本地文件
      *
      * @param filePath
      * @return 是否删除成功
@@ -115,7 +134,7 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
                 return ResponseResult.error("该文件已经存在");
             }
             //数据格式化
-              //新文件名称
+            //新文件名称
             String newFilePath = files.getFilePid() + "/" + newFileName;
             //修改文件名
             int updateResult = indexFileOperationDao.resetFileName(files.getFileId(), newFileName, newFilePath);
@@ -149,7 +168,7 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
      * 文件夹重命名
      *
      * @param newFileName 新文件夹名称和
-     * @param files 存储文件属性的对象
+     * @param files       存储文件属性的对象
      * @return
      */
     @Override
@@ -168,25 +187,25 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
             /**
              * 核心算法：通过递归实现子文件的修改
              */
-            String oldFilePath=files.getFilePath();   //获取旧的全路径
+            String oldFilePath = files.getFilePath();   //获取旧的全路径
             String newFilePath = files.getFilePid() + "/" + newFileName;  //新的全路径
 
-            List<Files> newFileList=new ArrayList<>();   //存储修改后的子文件对象
-            resetFolder(newFileList,newFilePath,oldFilePath);  //递归修改子文件属性
+            List<Files> newFileList = new ArrayList<>();   //存储修改后的子文件对象
+            resetFolder(newFileList, newFilePath, oldFilePath);  //递归修改子文件属性
             //遍历列表修改子文件数据
-            for(Files item:newFileList){
+            for (Files item : newFileList) {
                 //System.out.println(item);
-                int affectedRow=indexFileOperationDao.resetsub(item);
-                if(affectedRow<=0){
+                int affectedRow = indexFileOperationDao.resetsub(item);
+                if (affectedRow <= 0) {
                     throw new Exception("文件修改失败");
                 }
             }
 
             //修改当前文件夹名称
             files.setFileName(newFileName);
-            files.setFilePath(files.getFilePid()+"/"+newFileName);
-            int affectedRow=indexFileOperationDao.resetDir(files);
-            if(affectedRow<=0){
+            files.setFilePath(files.getFilePid() + "/" + newFileName);
+            int affectedRow = indexFileOperationDao.resetDir(files);
+            if (affectedRow <= 0) {
                 throw new Exception("文件修改失败");
             }
             //修改本地文件名
@@ -209,25 +228,26 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
 
     /**
      * 递归修改子文件属性
+     *
      * @param newFileList 存储修改后的子文件对象
      * @param newFilePath 新文件全路径
      * @param oldFilePath 旧的全路径
      */
-    private void resetFolder(List<Files> newFileList,String newFilePath,String oldFilePath){
+    private void resetFolder(List<Files> newFileList, String newFilePath, String oldFilePath) {
         //根据oldeFilePath查询下一级子文件
-        List<Files> subFilesList=indexFileOperationDao.gertSubFiles(oldFilePath);
-        if(subFilesList!=null){
-            for(Files files : subFilesList){
+        List<Files> subFilesList = indexFileOperationDao.getSubFiles(oldFilePath);
+        if (subFilesList != null) {
+            for (Files files : subFilesList) {
                 String subFileName = files.getFileName();
                 String subOldFilePath = oldFilePath + "/" + subFileName;
                 String subNewFilePath = newFilePath + "/" + subFileName;
 
                 files.setFilePid(newFilePath);
-                files.setFilePath(newFilePath+"/"+files.getFileName());
+                files.setFilePath(newFilePath + "/" + files.getFileName());
 
-                if(files.getFolderType()==1){   //如果是目录
+                if (files.getFolderType() == 1) {   //如果是目录
                     //递归
-                    resetFolder(newFileList,subNewFilePath,subOldFilePath);
+                    resetFolder(newFileList, subNewFilePath, subOldFilePath);
                 }
             }
         }
@@ -238,12 +258,13 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
 
     /**
      * 下载文件夹
+     *
      * @param files
      * @return
      */
     @Override
     public ResponseEntity downloadDir(Files files) {
-        try{
+        try {
             //判断是否存在该文件
             Files exist = indexFileOperationDao.exist(files.getFileId());
             if (exist == null) {
@@ -253,7 +274,7 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
             ByteArrayOutputStream zipBytes = new ByteArrayOutputStream();
             try (ZipOutputStream zipOut = new ZipOutputStream(zipBytes)) {
                 //文件夹对象
-                File folderToZip = new File(UserRoot+files.getFilePath());
+                File folderToZip = new File(UserRoot + files.getFilePath());
                 //文件压缩
                 addFilesToZip(folderToZip, folderToZip.getName(), zipOut);
             }
@@ -263,7 +284,7 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
                     .body(zipBytes.toByteArray());
 
 
-        }catch (Exception e){
+        } catch (Exception e) {
             handleExceptionAndRollback(e);
             return ResponseEntity.status(0).build();
         }
@@ -271,6 +292,7 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
 
     /**
      * 压缩文件夹
+     *
      * @param file
      * @param parentPath
      * @param zipOut
@@ -295,6 +317,7 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
 
     /**
      * 下载文件
+     *
      * @param files
      * @return
      */

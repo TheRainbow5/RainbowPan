@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
  * @DATE:2023/8/14 0014
  */
 public interface IndexFileOperationService {
-    ResponseResult deleteFileAndFolder(String fileId, String filePath);
+    ResponseResult deleteFileAndFolder(Files files);
 
     ResponseResult resetFileName(String newFileName, Files files);
 

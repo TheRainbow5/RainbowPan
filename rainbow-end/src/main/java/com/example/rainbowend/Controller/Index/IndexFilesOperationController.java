@@ -32,16 +32,15 @@ public class IndexFilesOperationController {
     private String UserRoot;
     /**
      * 删除文件
-     *
      * @param jsonObject
      */
     @PostMapping("delete")
     public ResponseResult deleteFile(@RequestBody JSONObject jsonObject) {
-        //1、解析参数
-        String fileId = jsonObject.getString("fileId");  //表id
-        String filePath = jsonObject.getString("filePath");  //全路径
+        //序列化数据，转为File实体类
+        String JSONStr = JSON.toJSONString(jsonObject.getJSONObject("colItem"));
+        Files files = JSON.parseObject(JSONStr, Files.class);
         //删除文件
-        return indexFileOperationService.deleteFileAndFolder(fileId, filePath);
+        return indexFileOperationService.deleteFileAndFolder(files );
     }
 
     /**
@@ -74,7 +73,6 @@ public class IndexFilesOperationController {
      */
     @PostMapping("download")
     public ResponseEntity downLoadFile(@RequestBody JSONObject jsonObject){
-        System.out.println(jsonObject);
         // 将JSON字符串转换为指定类的对象
         String JSONStr = JSON.toJSONString(jsonObject.getJSONObject("colItem"));
         Files files = JSON.parseObject(JSONStr, Files.class);
