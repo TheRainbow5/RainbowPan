@@ -17,6 +17,8 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Rainbow
@@ -93,6 +95,9 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
      */
     @Override
     public ResponseResult resetFileName(String newFileName, Files files) {
+        //解析参数
+        String suffix = files.getFileName().substring(files.getFileName().lastIndexOf(".")); //获取文件类型后缀
+        newFileName = newFileName + suffix;
         try {
             //判读文件是否存在
             Files existingFile = indexFileOperationDao.exist(files.getFileId());
@@ -102,11 +107,10 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
             //判断新文件名称是否存在
             Files existNewFile = indexFileOperationDao.existFile(files.getFilePid(), newFileName);
             if (existNewFile != null) {
-                return ResponseResult.error("新文件不存在");
+                return ResponseResult.error("该文件已经存在");
             }
             //数据格式化
-            String suffix = files.getFileName().substring(files.getFileName().lastIndexOf(".")); //获取文件类型后缀
-            newFileName = newFileName + suffix;   //新文件名称
+              //新文件名称
             String newFilePath = files.getFilePid() + "/" + newFileName;
             //修改文件名
             int updateResult = indexFileOperationDao.resetFileName(files.getFileId(), newFileName, newFilePath);
@@ -139,8 +143,8 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
     /**
      * 文件夹重命名
      *
-     * @param newFileName
-     * @param files
+     * @param newFileName 新文件夹名称和
+     * @param files 存储文件属性的对象
      * @return
      */
     @Override
@@ -149,38 +153,81 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
             //判读文件夹是否存在
             Files existingFile = indexFileOperationDao.exist(files.getFileId());
             if (existingFile == null) {
-                return ResponseResult.error("文件不存在");
+                return ResponseResult.error("文件夹不存在");
             }
             //判断新文件夹名称是否存在
             Files existNewFile = indexFileOperationDao.existFile(files.getFilePid(), newFileName);
             if (existNewFile != null) {
-                return ResponseResult.error("新文件不存在");
+                return ResponseResult.error("新文件夹不存在");
             }
-            //数据格式化
-            String suffix = files.getFileName().substring(files.getFileName().lastIndexOf(".")); //获取文件类型后缀
-            newFileName = newFileName + suffix;   //新文件名称
-            String newFilePath = files.getFilePid() + "/" + newFileName;
-            //修改文件名
-            int updateResult = indexFileOperationDao.resetFileName(files.getFileId(), newFileName, newFilePath);
-            if (updateResult <= 0) {
-                return ResponseResult.error("文件重命名失败");
+            /**
+             * 核心算法：通过递归实现子文件的修改
+             */
+            String oldFilePath=files.getFilePath();   //获取旧的全路径
+            String newFilePath = files.getFilePid() + "/" + newFileName;  //新的全路径
+
+            List<Files> newFileList=new ArrayList<>();   //存储修改后的子文件对象
+            resetFolder(newFileList,newFilePath,oldFilePath);  //递归修改子文件属性
+            //遍历列表修改子文件数据
+            for(Files item:newFileList){
+                //System.out.println(item);
+                int affectedRow=indexFileOperationDao.resetsub(item);
+                if(affectedRow<=0){
+                    throw new Exception("文件修改失败");
+                }
+            }
+
+            //修改当前文件夹名称
+            files.setFileName(newFileName);
+            files.setFilePath(files.getFilePid()+"/"+newFileName);
+            int affectedRow=indexFileOperationDao.resetDir(files);
+            if(affectedRow<=0){
+                throw new Exception("文件修改失败");
             }
             //修改本地文件名
             String filePid = files.getFilePid();  //当前文件夹
-            String oldFilePath = files.getFilePath();   //获取全路径
             File oldFile = new File(UserRoot, oldFilePath);
             File newFile = new File(UserRoot + filePid, newFileName);
-            // 执行文件重命名
+
             if (oldFile.exists() && !newFile.exists()) {
                 if (oldFile.renameTo(newFile)) {
                     return ResponseResult.ok("文件重命名成功");
                 }
             }
-            return ResponseResult.error("文件重命名失败");
+            return ResponseResult.error("文件重命名失败，请联系管理员");
         } catch (Exception e) {
             handleExceptionAndRollback(e);
             return ResponseResult.error("发生一些错误，请联系管理员");
         }
+    }
+
+
+    /**
+     * 递归修改子文件属性
+     * @param newFileList 存储修改后的子文件对象
+     * @param newFilePath 新文件全路径
+     * @param oldFilePath 旧的全路径
+     */
+    private void resetFolder(List<Files> newFileList,String newFilePath,String oldFilePath){
+        //根据oldeFilePath查询下一级子文件
+        List<Files> subFilesList=indexFileOperationDao.gertSubFiles(oldFilePath);
+        if(subFilesList!=null){
+            for(Files files : subFilesList){
+                String subFileName = files.getFileName();
+                String subOldFilePath = oldFilePath + "/" + subFileName;
+                String subNewFilePath = newFilePath + "/" + subFileName;
+
+                files.setFilePid(newFilePath);
+                files.setFilePath(newFilePath+"/"+files.getFileName());
+
+                if(files.getFolderType()==1){   //如果是目录
+                    //递归
+                    resetFolder(newFileList,subNewFilePath,subOldFilePath);
+                }
+            }
+        }
+        //将subList中的元素移动到newFileList
+        newFileList.addAll(subFilesList);
     }
 
     /**

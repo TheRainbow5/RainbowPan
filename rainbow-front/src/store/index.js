@@ -22,7 +22,7 @@ const store = new Vuex.Store({
          */
         saveCurrentDir(state, payload) {
             state.currentDir = payload;
-            console.log("当前目录：" + state.currentDir);
+            // console.log("当前目录：" + state.currentDir);
         },
         saveAbsolutePath(state, payload) {
             if (payload == '') {
@@ -30,12 +30,12 @@ const store = new Vuex.Store({
             } else {
                 state.absolutePath += "/" + payload;
             }
-            console.log("当前全路径：" + state.absolutePath);
+            // console.log("当前全路径：" + state.absolutePath);
         },
         //退回的全路径
         modifiedAbsolutePath(state, payload) {
             state.absolutePath = payload;
-            console.log("当前全路径：" + state.absolutePath);
+            // console.log("当前全路径：" + state.absolutePath);
         },
         //
         saveColItem(state, payload) {

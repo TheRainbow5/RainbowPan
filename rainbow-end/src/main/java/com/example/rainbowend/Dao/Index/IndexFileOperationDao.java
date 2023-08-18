@@ -1,10 +1,9 @@
 package com.example.rainbowend.Dao.Index;
 
 import com.example.rainbowend.Entity.Files;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 /**
  * Rainbow
@@ -75,4 +74,34 @@ public interface IndexFileOperationDao {
             "SET t.FILE_PID=#{newSubFilePid} " +
             "WHERE t.FILE_PID=#{oldSubFilePid}")
     int resetSubFilePid(String oldSubFilePid, String newSubFilePid);
+
+    /**
+     * 根据FILE_PATH查询子文件
+     * @param oldFilePath
+     * @return 返回List集合
+     */
+    @Select("SELECT * FROM files t " +
+            "WHERE t.FILE_PID=#{oldFilePath}")
+    List<Files> gertSubFiles(String oldFilePath);
+
+
+    /**
+     * 修改子文件路径
+     * @param item 子文件对象
+     * @return
+     */
+    @Update("UPDATE files t " +
+            "SET t.FILE_PID=#{file.filePid},t.FILE_PATH=#{file.filePath} " +
+            "WHERE t.FILE_ID=#{file.fileId}")
+    int resetsub(@Param("file") Files item);
+
+    /**
+     * 修改当前文件夹名称
+     * @param files
+     * @return
+     */
+    @Update("UPDATE files t " +
+            "SET t.FILE_NAME=#{file.fileName},t.FILE_PATH=#{file.filePath} " +
+            "WHERE t.FILE_ID=#{file.fileId}")
+    int resetDir(@Param("file")Files files);
 }

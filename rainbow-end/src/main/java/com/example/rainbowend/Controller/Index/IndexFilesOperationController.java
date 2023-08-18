@@ -55,7 +55,9 @@ public class IndexFilesOperationController {
         //重命名文件夹
         if (files.getFolderType() == 1) {
             return indexFileOperationService.resetFolderName(newFileName, files);
-        } else {
+        }
+        //重命名文件
+        else {
             return indexFileOperationService.resetFileName(newFileName, files);
         }
 

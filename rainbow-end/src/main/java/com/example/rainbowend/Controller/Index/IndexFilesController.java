@@ -42,17 +42,16 @@ public class IndexFilesController {
     public ResponseResult createNewDir(@RequestBody JSONObject jsonObject) {
         // 解析必要参数
         String fileName = jsonObject.getString("fileName");  // 文件名
+        // 设置默认文件夹名
+        if (fileName.equals("")) {
+            fileName = "未命名文件夹";
+        }
         String email = jsonObject.getString("email");  // 邮箱
         String filePid = email + jsonObject.getString("absolutePath");  // 父路径
         String filePath = filePid + "/" + fileName;   //文件存储的全路径
 
         // 生成文件ID
         String fileId = UUID.randomUUID().toString().replace("-", "");
-
-        // 设置默认文件夹名
-        if (fileName.equals("")) {
-            fileName = "未命名文件夹";
-        }
 
         // 获取创建时间和更新时间
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

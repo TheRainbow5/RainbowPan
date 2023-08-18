@@ -248,7 +248,7 @@ export default {
                 this.$axios.post('index/resetFileName', param, {
                     headers: { token: this.token }
                 }).then(value => {
-                    console.log(value.data);
+                    // console.log(value.data);
                     if (value.data.status === '0') {
                         this.$notify({
                             title: '文件重命名成功',
@@ -259,6 +259,14 @@ export default {
                         });
                         //刷新页面
                         this.reload();
+                    } else {
+                        this.$notify({
+                            title: value.data.message,
+                            position: 'top-right',  //显示位置
+                            duration: 3000,  // 3秒关闭
+                            type: 'error',
+                            offset: 80
+                        });
                     }
                 }).catch(() => {
                     this.$notify({
