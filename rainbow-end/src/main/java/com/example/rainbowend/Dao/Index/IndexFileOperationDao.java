@@ -37,8 +37,8 @@ public interface IndexFileOperationDao {
      * @return
      */
     @Delete("DELETE FROM files t " +
-            "WHERE t.FILE_PATH=#{filePath}")
-    int delete(String filePath);
+            "WHERE t.FILE_ID=#{files.fileId}")
+    int delete(@Param("files") Files files);
 
 
     /**

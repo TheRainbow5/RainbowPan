@@ -17,4 +17,5 @@ public interface IndexFileService {
 
     ResponseResult uploadNewFile(Files files, MultipartFile multipartFile);
 
+    ResponseResult getAllFilesByFileName(Page page, String fileName, String email, String absolutePath);
 }

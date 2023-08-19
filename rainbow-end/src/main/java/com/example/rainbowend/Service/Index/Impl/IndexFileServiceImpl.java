@@ -168,6 +168,44 @@ public class IndexFileServiceImpl implements IndexFileService {
         }
     }
 
+    /**
+     * 根据条件查询
+     *
+     * @param page
+     * @param fileName
+     * @param email
+     * @param absolutePath
+     * @return
+     */
+    @Override
+    public ResponseResult getAllFilesByFileName(Page page, String fileName, String email, String absolutePath) {
+        Map<String, Object> map = new HashMap<>();
+        int filesNum = 0;
+        List<Files> filesList;
+        try {
+            // 根据是否提供绝对路径，设置当前目录
+            String filePid = (absolutePath.isEmpty()) ? email : email + absolutePath;
+            // 查询当前目录下所有子文件的数量
+            filesNum = indexFileDao.getAllFilesNumByFileName(fileName);
+
+            // 分页查询当前目录下的文件列表
+            filesList = indexFileDao.getAllFilesByFileName(page, fileName);
+            
+            map.put("fileList", filesList);
+            map.put("totalNum", filesNum);
+
+            // 根据文件数量判断是否获取成功
+            if (filesNum == 0) {
+                return ResponseResult.error("目录为空", map);
+            } else {
+                return ResponseResult.ok("获取成功", map);
+            }
+        } catch (Exception e) {
+            // 处理异常并回滚事务
+            handleException(e);
+            return ResponseResult.error("发生一些错误，请联系管理员");
+        }
+    }
 
     /**
      * 处理异常并执行事务回滚

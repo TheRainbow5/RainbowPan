@@ -35,6 +35,7 @@ public interface IndexUserDao {
 
     /**
      * 获取图片访问路径
+     *
      * @param email
      * @return
      */
@@ -45,6 +46,7 @@ public interface IndexUserDao {
 
     /**
      * 删除用户表数据
+     *
      * @param email 邮箱
      */
     @Delete("DELETE FROM users t " +
@@ -53,6 +55,7 @@ public interface IndexUserDao {
 
     /**
      * 删除文件表数据
+     *
      * @param email 邮箱
      * @return
      */

@@ -36,6 +36,7 @@ public interface IndexFileDao {
 
     /**
      * 支持分页查询目录下所有子文件
+     *
      * @param filePid
      * @return
      */
@@ -47,6 +48,7 @@ public interface IndexFileDao {
 
     /**
      * 查询一共多少条数据
+     *
      * @param filePid
      * @return
      */
@@ -57,6 +59,7 @@ public interface IndexFileDao {
 
     /**
      * 判断同类型的文件是否重名
+     *
      * @param files
      * @return
      */
@@ -67,6 +70,7 @@ public interface IndexFileDao {
 
     /**
      * 保存文件信息
+     *
      * @param files
      * @return
      */
@@ -78,12 +82,12 @@ public interface IndexFileDao {
     int saveFile(@Param("files") Files files);
 
 
-    /**
-     * 查询父文件夹的大小
-     * @param filePath
-     */
-    @Select("SELECT t.* FROM files t " +
-            "WHERE t.FILE_PATH=#{filePath}")
-    Files getPSize(String filePath);
+    @Select("SELECT COUNT(*) FROM files t " +
+            "WHERE t.FILE_NAME LIKE CONCAT('%',#{fileName},'%')")
+    int getAllFilesNumByFileName(String fileName);
 
+    @Select("SELECT t.* FROM files t " +
+            "WHERE t.FILE_NAME LIKE CONCAT('%',#{fileName},'%') " +
+            "ORDER BY t.FOLDER_TYPE DESC")
+    List<Files> getAllFilesByFileName(Page page, String fileName);
 }

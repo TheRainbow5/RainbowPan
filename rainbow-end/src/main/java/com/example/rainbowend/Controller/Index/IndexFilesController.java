@@ -32,6 +32,7 @@ public class IndexFilesController {
     @Resource
     private IndexFileService indexFileService;
 
+
     /**
      * 创建新文件夹
      *
@@ -92,11 +93,15 @@ public class IndexFilesController {
         // 从 JSON 对象中解析参数
         String email = jsonObject.getString("email");
         String absolutePath = jsonObject.getString("absolutePath");  // 访问全路径
+        String fileName = jsonObject.getString("searchInput");  //搜索条件
         int currentPage = Integer.parseInt(jsonObject.getString("currentPage"));  // 当前页数
         int pageSize = Integer.parseInt(jsonObject.getString("pageSize"));   // 页面大小
-
-        // 调用 indexFileService 的 getAllFiles 方法获取文件列表
-        return indexFileService.getAllFiles(new Page(currentPage, pageSize), email, absolutePath);
+        if (!fileName.equals("")) {
+            return indexFileService.getAllFilesByFileName
+                    (new Page(currentPage, pageSize), fileName, email, absolutePath);
+        } else {
+            return indexFileService.getAllFiles(new Page(currentPage, pageSize), email, absolutePath);
+        }
     }
 
     /**

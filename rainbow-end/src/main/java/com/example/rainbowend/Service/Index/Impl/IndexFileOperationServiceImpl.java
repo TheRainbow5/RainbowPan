@@ -38,16 +38,9 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
     @Resource
     private IndexFileOperationDao indexFileOperationDao;
 
+
     /**
      * 删除文件
-     * 1、获取filePid、fileName
-     * 2、判断文件是否存在
-     * 不存在：抛出异常
-     * 3、存在
-     * 删除数据
-     * 4、判断本地文件是否存在
-     * 不存在：事务回滚，抛出异常
-     * 5、存在：删除文件
      */
     @Override
     public ResponseResult deleteFileAndFolder(Files files) {
@@ -59,7 +52,7 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
 
                 //2、递归删除数据
                 deleteFile(filePath);
-                indexFileOperationDao.delete(filePath);
+                indexFileOperationDao.delete(files);
 
                 //3、递归删除本地文件
                 if (deleteLocalFile(UserRoot + filePath)) {
@@ -83,13 +76,15 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
         List<Files> subFilesList = indexFileOperationDao.getSubFiles(filePath);
         if (subFilesList != null) {
             for (Files files : subFilesList) {
+
+//                files.setStatus();
                 String subFileName = files.getFileName();
                 String subFilePath = filePath + "/" + subFileName;
                 if (files.getFolderType() == 1) {  //目录
                     deleteFile(subFilePath);
                 }
                 //删除数据
-                indexFileOperationDao.delete(subFilePath);
+                indexFileOperationDao.delete(files);
             }
         }
     }
