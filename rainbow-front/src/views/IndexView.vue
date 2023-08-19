@@ -14,7 +14,7 @@
             <!-- 搜索 -->
             <div class="search">
                 <div class="search-btn">
-                    <el-button class="search-log">
+                    <el-button class="search-log" @click="search">
                         <svg t="1691246042746" class="icon" viewBox="0 0 1024 1024" version="1.1"
                             xmlns="http://www.w3.org/2000/svg" p-id="2101" width="20" height="20">
                             <path
@@ -203,7 +203,7 @@
             </el-aside>
             <!-- 主体 -->
             <el-main class="main" style="width:82%;">
-                <router-view />
+                <router-view ref="myPan" />
             </el-main>
 
             <!-- 文件详细信息 -->
@@ -450,15 +450,11 @@
                     </div>
                 </div>
             </div>
-
-
-
         </el-container>
     </el-container>
 </template>
 
 <script >
-
 
 export default {
     inject: ['reload'],
@@ -503,40 +499,57 @@ export default {
     },
     methods: {
         /**
+         * 搜索文件
+         */
+        search() {
+            this.$store.commit('saveSearchInput', this.searchInput);
+            this.$refs.myPan.getAllFiles();
+        },
+        /**
          * 注销账号
          */
         logoff() {
             let param = {
                 email: this.user.email
             }
-            this.$axios.post('index/logoffUser', param, {
-                headers: { token: this.token }
-            }).then(value => {
-                console.log(value.data);
-                //当前所在文件夹位置
-                if (value.data.status === '0') {
+            this.$confirm('此操作将注销该账号, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                customClass: "logoff-dialog",
+                cancelButtonClass: "logoff-cancel-btn",    //取消按钮属性
+                confirmButtonClass: "logoff-comfirm-btn",   //确定按钮属性
+            }).then(() => {
+                this.$axios.post('index/logoffUser', param, {
+                    headers: { token: this.token }
+                }).then(value => {
+                    console.log(value.data);
+                    //当前所在文件夹位置
+                    if (value.data.status === '0') {
+                        this.$notify({
+                            title: '注销用户成功',
+                            position: 'top-right',  //显示位置
+                            duration: 3000,  // 2秒关闭
+                            type: 'success',
+                            offset: 80
+                        });
+                        //清楚缓存
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('email');
+                        //跳转到登录页面
+                        this.$router.push('/', () => { }, () => { });
+                    }
+                }).catch(() => {
                     this.$notify({
-                        title: '注销用户成功',
+                        title: '发生一些错误，请联系管理员',
                         position: 'top-right',  //显示位置
                         duration: 3000,  // 2秒关闭
-                        type: 'success',
+                        type: 'warning',
                         offset: 80
                     });
-                    //清楚缓存
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('email');
-                    //跳转到登录页面
-                    this.$router.push('/', () => { }, () => { });
-                }
-            }).catch(() => {
-                this.$notify({
-                    title: '发生一些错误，请联系管理员',
-                    position: 'top-right',  //显示位置
-                    duration: 3000,  // 2秒关闭
-                    type: 'warning',
-                    offset: 80
                 });
-            });
+
+            }).catch(() => { });
         },
         /**
          * 关闭详情页
@@ -767,6 +780,7 @@ export default {
         },
         // 我的云端硬盘
         toMyPanPage() {
+            this.$store.commit('saveSearchInput', '');
             this.$store.commit('saveCurrentDir', '');
             this.$store.commit('saveAbsolutePath', '');
             this.reload();
@@ -1411,7 +1425,62 @@ export default {
         transform: scale(0.95);
     }
 
+}
 
+.logoff-dialog {
+    background-color: white !important;
+    // height: 150px; //上传文件夹
+    width: 400px !important;
+    height: 150px !important;
 
+}
+
+//取消按钮属性
+.logoff-cancel-btn {
+    color: black !important;
+    font-size: 15px !important;
+    border: none !important;
+    width: 70px !important;
+    height: 40px !important;
+    margin-right: 40px !important;
+    border-radius: 10px !important;
+}
+
+.logoff-cancel-btn:hover {
+    color: black !important;
+    background-color: #edf2fc;
+    cursor: pointer;
+    // filter: brightness(0.9);
+}
+
+.logoff-cancel-btn:active {
+    transform: scale(0.95);
+}
+
+//确定按钮属性
+.logoff-comfirm-btn {
+    color: black !important;
+    background-color: white;
+    font-size: 15px !important;
+    border: none !important;
+    width: 70px !important;
+    height: 40px !important;
+    margin-right: 40px !important;
+    border-radius: 10px !important;
+}
+
+.logoff-comfirm-btn:not(.active) {
+    background-color: white;
+}
+
+.logoff-comfirm-btn:hover {
+    color: black !important;
+    background-color: #edf2fc;
+    cursor: pointer;
+    // filter: brightness(0.9);
+}
+
+.logoff-comfirm-btn:active {
+    transform: scale(0.95);
 }
 </style>

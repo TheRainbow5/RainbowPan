@@ -12,9 +12,16 @@ const store = new Vuex.Store({
         absolutePath: '',   //全路径
         colItem: undefined,
         showDetail: false,
+        searchInput: '',
     },
     // 修改全局变量必须通过mutations中的方法
     mutations: {
+        /**
+         * 保存搜索条件
+         */
+        saveSearchInput(state, payload) {
+            state.searchInput = payload;
+        },
         /**
          * 存储当前目录
          * @param {*} state 
@@ -45,12 +52,12 @@ const store = new Vuex.Store({
         changeShowDetail(state, payload) {
             state.showDetail = payload;
         },
-
-
-
     },
     // 获取属性值
     getters: {
+        getSearchInput(state) {
+            return state.searchInput;
+        },
         // 返回当前目录
         getCurrentDir: function (state) {
             return state.currentDir;

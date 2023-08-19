@@ -1,10 +1,7 @@
 <template>
     <div style="width: 100%; height:100%;">
-        <!-- 添加新建和上传等按钮 -->
-        <div style="width: 100%; height:10%; background-color:blanchedalmond"></div>
-
         <!-- 显示文件 -->
-        <div style="width: 100%; height:80%; ">
+        <div style="width: 100%; height:90%; ">
             <!-- 退回父目录 -->
             <div class="back-div" v-show="this.$store.getters.getCurrentDir !== ''">
                 <div class="back-btn" @click="backToPreviousView">
@@ -165,7 +162,6 @@
                             trigger="hover">
                             <div class="dialog-div">
                                 <!-- 下载 -->
-
                                 <button class="download-btn" @click="downloadFile(colItem)">
                                     下载
                                 </button>
@@ -352,14 +348,19 @@ export default {
          * 删除文件
          */
         deleteFile(colItem) {
+            let param = {
+                colItem: colItem
+            }
             this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning',
-                center: true,
+                customClass: "logoff-dialog",
+                cancelButtonClass: "logoff-cancel-btn",    //取消按钮属性
+                confirmButtonClass: "logoff-comfirm-btn",   //确定按钮属性
             }).then(() => {
                 //发送删除请求
-                this.$axios.post('index/delete', colItem, {
+                this.$axios.post('index/delete', param, {
                     headers: { token: this.token }
                 }).then(value => {
                     console.log(value.data);
@@ -381,6 +382,7 @@ export default {
          * 退回上一个目录
          */
         backToPreviousView() {
+            this.$store.commit('saveSearchInput', '');
             //获取全路径和当前目录
             let absolutePath = this.$store.getters.getAbsolutePath;
             let currentDir = this.$store.getters.getCurrentDir;
@@ -414,11 +416,14 @@ export default {
          * 获取当前目录下所有文件
          */
         getAllFiles(newPage) {
+            var searchInput = this.$store.getters.getSearchInput;
+            console.log(searchInput);
             if (newPage) {
                 this.currentPage = newPage;
             }
             let param = {
                 email: this.email,
+                searchInput: searchInput,
                 currentDir: this.$store.getters.getCurrentDir,
                 absolutePath: this.$store.getters.getAbsolutePath,
                 currentPage: this.currentPage,
@@ -428,7 +433,7 @@ export default {
             this.$axios.post('index/allFiles', param, {
                 headers: { token: this.token }
             }).then(value => {
-                // console.log(value.data);
+                console.log(value.data);
                 this.totalNum = value.data.data.totalNum;
                 this.colItems = value.data.data.fileList;
                 // console.log(this.colItems);
