@@ -194,6 +194,7 @@
                                     <!-- 文件上传进度条 -->
                                     <div style="margin-top: 30px;">
                                         <el-progress :percentage="uploadPercentage" v-if="uploading" />
+                                        <span style="font-size 2px;" v-if="uploading"> {{ speedDisplay }}</span>
                                     </div>
                                 </el-menu>
                             </el-col>
@@ -269,9 +270,9 @@
                                 fill="#FFFFFF" p-id="12910"></path>
                         </svg>
                         <!-- word文档 -->
-                        <svg v-if="this.$store.getters.getColItem === '4'" t="1691936014185" class="detail-icon"
-                            viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1641" width="30"
-                            height="30">
+                        <svg v-if="this.$store.getters.getColItem.fileCategory === '4'" t="1691936014185"
+                            class="detail-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                            p-id="1641" width="30" height="30">
                             <path
                                 d="M959.16 187.68c2.14-23.23-16.1-41.26-39.32-38.92-108.92-1.76-217.84 0-326.84-0.61V66.64h-60.95C375.86 94.45 219.57 121 63.38 148.35v713c155.38 27.2 310.85 53.18 465.93 81.51H593v-81.51c102 0 203.87-0.2 305.86 0.31 17.32-0.82 36.58 0.51 51.45-10.09 11.92-18.24 8.87-41.06 9.89-61.64-1.45-200.72 0.69-401.53-1.04-602.25z"
                                 fill="#2A5699" p-id="1642"></path>
@@ -280,9 +281,9 @@
                                 fill="#FFFFFF" p-id="1643"></path>
                         </svg>
                         <!-- excel -->
-                        <svg v-if="this.$store.getters.getColItem === '5'" t="1691936045088" class="detail-icon"
-                            viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1786" width="30"
-                            height="30">
+                        <svg v-if="this.$store.getters.getColItem.fileCategory === '5'" t="1691936045088"
+                            class="detail-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                            p-id="1786" width="30" height="30">
                             <path
                                 d="M533.58 75H594v81.31c101.74 0 203.47 0.2 305.21-0.31 17.18 0.71 36.09-0.51 51 9.76 10.47 15 9.25 34.15 10 51.43q-0.76 264.66-0.2 529.12c-0.51 29.58 2.74 59.76-3.45 88.93-4.14 21.1-29.56 21.61-46.56 22.32-105.3 0.31-210.69-0.2-316.09 0V949h-63.07c-154.9-28.15-310.1-54.17-465.2-81.31V156.37C221.66 129.23 377.67 102.51 533.58 75z"
                                 fill="#207245" p-id="1787"></path>
@@ -297,9 +298,9 @@
                                 fill="#FFFFFF" p-id="1790"></path>
                         </svg>
                         <!-- txt -->
-                        <svg v-if="this.$store.getters.getColItem === '6'" t="1691918416144" class="detail-icon"
-                            viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6166" width="30"
-                            height="30">
+                        <svg v-if="this.$store.getters.getColItem.fileCategory === '6'" t="1691918416144"
+                            class="detail-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                            p-id="6166" width="30" height="30">
                             <path
                                 d="M535.94 71.69h57.58v91.4c108.56 0.61 217.22-1.12 325.68 0.51 23.36-2.23 41.64 15.95 39.3 39.3 1.73 189.71-0.41 379.52 1 569.33-1 20.51 2 43.26-9.75 61.44-14.83 10.76-34.12 9.34-51.48 10.16-101.56-0.51-203.11-0.31-304.77-0.31v101.55h-63.15C375.59 916.83 220.5 891 65.63 863.82q-0.15-355.4 0-710.69C222.34 126 379 98.39 535.94 71.69z"
                                 fill="#868695" p-id="6167"></path>
@@ -308,9 +309,9 @@
                                 fill="#FFFFFF" p-id="6168"></path>
                         </svg>
                         <!-- code -->
-                        <svg v-if="this.$store.getters.getColItem === '7'" t="1691918486942" class="detail-icon"
-                            viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9180" width="30"
-                            height="30">
+                        <svg v-if="this.$store.getters.getColItem.fileCategory === '7'" t="1691918486942"
+                            class="detail-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                            p-id="9180" width="30" height="30">
                             <path
                                 d="M981.333333 276.053333V981.333333a42.666667 42.666667 0 0 1-42.666666 42.666667H85.333333a42.666667 42.666667 0 0 1-42.666666-42.666667V42.666667a42.666667 42.666667 0 0 1 42.666666-42.666667h619.946667z"
                                 fill="#B9C9D5" p-id="9181"></path>
@@ -467,6 +468,9 @@ export default {
             uploading: false,
             uploadPercentage: 0,
             uploadFileName: '',
+            speedDisplay: "上传速度: 0 MB/s",
+            lastUploadedBytes: 0,
+            lastUploadedTime: 0,
             //搜索调条件
             searchInput: '',
             //新建文件夹弹窗
@@ -567,7 +571,15 @@ export default {
             this.uploading = true;
             // Simulating upload progress
             setTimeout(() => {
+                const currentTime = new Date().getTime();
+                const elapsedTime = (currentTime - this.lastUploadedTime) / 1000; // 转换为秒
+                const uploadedBytes = event.loaded - this.lastUploadedBytes;
+                const speed = (uploadedBytes / (elapsedTime * 1024 * 1024)).toFixed(2); // 转换为MB/s
+                this.speedDisplay = `上传速度: ${speed} MB/s`;
                 this.uploadPercentage = parseFloat((event.percent).toFixed(2)); // 保留两位小数
+                // 更新上一次上传的字节数和时间
+                this.lastUploadedBytes = event.loaded;
+                this.lastUploadedTime = currentTime;
             }, 100);
             if (this.uploadPercentage >= 100) {
                 this.uploading = false;

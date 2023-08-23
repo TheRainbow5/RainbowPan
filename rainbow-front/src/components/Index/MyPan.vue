@@ -161,6 +161,10 @@
                         <el-popover popper-class="operation-dialog" :visible-arrow="false" placement="bottom" width="150"
                             trigger="hover">
                             <div class="dialog-div">
+                                <!-- 预览 -->
+                                <button class="preview-btn" @click="previewFile(colItem)">
+                                    预览
+                                </button>
                                 <!-- 下载 -->
                                 <button class="download-btn" @click="downloadFile(colItem)">
                                     下载
@@ -189,6 +193,32 @@
             </el-row>
 
         </div>
+        <!-- 视频预览 -->
+        <el-dialog title="录音音乐" :visible.sync="videoVisible" width="80%">
+            <template>
+                <center>
+                    <Video :src="src" />
+                </center>
+            </template>
+        </el-dialog>
+        <!-- 音乐预览 -->
+        <el-dialog title="录音音乐" :visible.sync="audioVisible" width="40%" :before-close="stopAudio">
+            <template>
+                <center>
+                    <audio :src="src" controls="controls" ref="audio"></audio>
+                </center>
+            </template>
+        </el-dialog>
+        <!-- 文件预览 -->
+        <el-dialog title="word文档" top="0" width="90%" :visible.sync="wordVisible">
+            <vue-office-docx :src="src" />
+        </el-dialog>
+        <el-dialog title="pdf文档" top="0" width="90%" :visible.sync="pdfVisible">
+            <vue-office-pdf :src="src" />
+        </el-dialog>
+        <el-dialog title="excel文档" top="0" width="90%" :visible.sync="excelVisible">
+            <vue-office-excel :src="src" />
+        </el-dialog>
         <!-- 分页 -->
         <div class="pagination-div" style="height: 10%;">
             <el-pagination hide-on-single-page :current-page="currentPage" :page-size="pageSize" layout="prev, pager, next"
@@ -198,13 +228,28 @@
     </div>
 </template>
 
+
 <script scoped>
+import VueOfficeDocx from '@vue-office/docx'
+import '@vue-office/docx/lib/index.css'
+import VueOfficeExcel from '@vue-office/excel'
+import '@vue-office/excel/lib/index.css'
+import VueOfficePdf from '@vue-office/pdf'
+import Video from './Video.vue'
+
 export default {
     inject: ['reload'],
-    components: {},
+    components: { VueOfficeDocx, VueOfficeExcel, VueOfficePdf, Video },
     props: {},
     data() {
         return {
+            //文件预览
+            src: '',
+            videoVisible: false,
+            audioVisible: false,
+            wordVisible: false,
+            excelVisible: false,
+            pdfVisible: false,
             //数组大小=16
             colItems: [],   //存储子文件
             email: '',
@@ -228,7 +273,62 @@ export default {
         this.getAllFiles();
     },
     methods: {
+        //音频暂停
+        stopAudio() {
+            this.audioVisible = false;
+            this.$refs.audio.pause();
+            this.$refs.audio.currentTime = 0;
+        },
+        previewFile(colItem) {
+            if (colItem.fileCategory === '0') {  //视频
+                this.videoVisible = true;
+            }
+            if (colItem.fileCategory === '1') {  //音乐
+                this.audioVisible = true;
+            }
+            if (colItem.fileCategory === '3') {  //pdf
+                this.pdfVisible = true;
+            }
+            if (colItem.fileCategory === '4') {  //word
+                this.wordVisible = true;
+            }
+            if (colItem.fileCategory === '5') {  //excel
+                this.excelVisible = true;
+            }
+            if (colItem.folderType == 1) {  //目录
+                this.$notify({
+                    title: '无法预览文件夹',
+                    position: 'top-right',  //显示位置
+                    duration: 3000,  // 3秒关闭
+                    type: 'error',
+                    offset: 80
+                });
+            } else {
+                let param = {
+                    colItem: colItem
+                }
+                this.$axios.post('index/preview', param, {
+                    responseType: 'blob',    //响应文件流为二进制
+                    headers: { token: this.token }
+                }).then(value => {
+                    console.log(value);
+                    if (value.status == 200) {
+                        var blob = new Blob([value.data]);     //响应的二进制文件流
+                        // console.log(value.data);
+                        this.src = window.URL.createObjectURL(blob);
+                    }
+                }).catch(() => {
+                    this.$notify({
+                        title: '发生一些错误,请联系管理员',
+                        position: 'top-right',  //显示位置
+                        duration: 3000,  // 3秒关闭
+                        type: 'error',
+                        offset: 80
+                    });
+                });
+            }
 
+        },
         /**
          * 下载文件
          * @param {文件属性} colItem 
@@ -241,7 +341,7 @@ export default {
                 responseType: 'blob',    //响应文件流为二进制
                 headers: { token: this.token }
             }).then(value => {
-                console.log(value);
+                // console.log(value);
                 if (colItem.folderType == 1) {  //文件夹
                     if (value.status == 200) {
                         var blob = new Blob([value.data]);     //响应的二进制文件流
@@ -687,12 +787,29 @@ export default {
         background-color: #f7f9fc;
         border-radius: 20px;
 
-        .download-btn {
+
+        .preview-btn {
             border: none;
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
             background-color: white;
-            height: 25%;
+            height: 20%;
+            width: 100%;
+        }
+
+        .preview-btn:hover {
+            background-color: #e2e9fa;
+            cursor: pointer;
+        }
+
+        .preview-btn:active {
+            transform: scale(0.95);
+        }
+
+        .download-btn {
+            border: none;
+            background-color: white;
+            height: 20%;
             width: 100%;
         }
 
@@ -708,7 +825,7 @@ export default {
         .resetname-btn {
             border: none;
             background-color: white;
-            height: 25%;
+            height: 20%;
             width: 100%;
         }
 
@@ -724,7 +841,7 @@ export default {
         .delete-btn {
             border: none;
             background-color: white;
-            height: 25%;
+            height: 20%;
             width: 100%;
 
             //删除弹窗
@@ -750,7 +867,7 @@ export default {
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
             background-color: white;
-            height: 25%;
+            height: 20%;
             width: 100%;
         }
 

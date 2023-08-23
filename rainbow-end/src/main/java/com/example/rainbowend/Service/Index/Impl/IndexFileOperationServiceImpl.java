@@ -344,6 +344,39 @@ public class IndexFileOperationServiceImpl implements IndexFileOperationService 
         }
     }
 
+    /**
+     * 文件预览
+     *
+     * @param files
+     * @return
+     */
+    @Override
+    public ResponseEntity previewFile(Files files) {
+        try {
+            //判断是否存在该文件
+            Files exist = indexFileOperationDao.exist(files.getFileId());
+            if (exist == null) {
+                return ResponseEntity.notFound().build();  //资源未找到
+            }
+            //创建文件流对象
+            File file = new File(UserRoot + files.getFilePath());
+            if (!file.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+            //获取文件输入流
+            InputStream inputStream = new FileInputStream(file);
+            InputStreamResource inputStreamResource = new InputStreamResource(inputStream);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(inputStreamResource);
+
+        } catch (Exception e) {
+            handleExceptionAndRollback(e);
+            return ResponseEntity.status(0).build();
+        }
+    }
 
     /**
      * 处理异常并执行事务回滚

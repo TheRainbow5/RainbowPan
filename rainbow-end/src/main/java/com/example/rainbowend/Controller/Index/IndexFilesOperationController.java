@@ -87,4 +87,18 @@ public class IndexFilesOperationController {
     }
 
 
+    /**
+     * 文件预览
+     *
+     * @param jsonObject 文件属性
+     * @return
+     */
+    @PostMapping("preview")
+    public ResponseEntity previewFile(@RequestBody JSONObject jsonObject) {
+        // 将JSON字符串转换为指定类的对象
+        String JSONStr = JSON.toJSONString(jsonObject.getJSONObject("colItem"));
+        Files files = JSON.parseObject(JSONStr, Files.class);
+        return indexFileOperationService.previewFile(files);
+    }
+
 }

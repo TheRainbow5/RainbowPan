@@ -283,7 +283,7 @@ public class IndexFilesController {
         } else if (imageList.contains(suffix)) {   //图片
             return "2";
         } else if (suffix.equals(".pdf")) {
-            return "pdf";
+            return "3";
         } else if (wordList.contains(suffix)) {
             return "4";
         } else if (excelList.contains(suffix)) {

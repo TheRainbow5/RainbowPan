@@ -19,4 +19,6 @@ public interface IndexFileOperationService {
     ResponseEntity downloadDir(Files files);
 
     ResponseEntity downloadFile(Files files);
+
+    ResponseEntity previewFile(Files files);
 }

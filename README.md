@@ -24,10 +24,14 @@
 * Element UI：基于 Vue.js 的 UI 组件库，提供丰富的用户界面组件。
 
 ## 快速开始
+#### 重要
+1、必须在项目文件夹下创建Users目录<br>
+2、由于配置了发送验证码的功能，所以必须联网<br>
 ### 后端
 1、克隆项目到本地。<br>
 2、在 rainbow-end/src/main/resources/application-mybatis.yaml 文件中配置数据库连接信息。<br>
-3、使用 Maven 构建并运行 Spring Boot 后端应用。<br>
+3、在 rainbow-end/src/main/resources/application.yaml 文件中修改发送验证码的邮箱和项目的全路径。<br>
+4、使用 Maven 构建并运行 Spring Boot 后端应用。<br>
 ````
 cd rainbow-end
 mvn spring-boot:run
