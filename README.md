@@ -25,14 +25,14 @@
 
 ## 快速开始
 #### 重要
-1、必须在项目文件夹下创建Users目录<br>
+1、将Users文件夹和rainbow-front、end文件同一级目录<br>
 2、由于配置了发送验证码的功能，所以必须联网<br>
 ### 后端
 1、克隆项目到本地。<br>
 2、在 rainbow-end/src/main/resources/application-mybatis.yaml 文件中配置数据库连接信息。<br>
 3、在 rainbow-end/src/main/resources/application.yaml 文件中修改发送验证码的邮箱和项目的全路径。<br>
 4、使用 Maven 构建并运行 Spring Boot 后端应用。<br>
-````
+````shell
 cd rainbow-end
 mvn spring-boot:run
 ````
@@ -40,13 +40,48 @@ mvn spring-boot:run
 ### 前端
 1、进入 rainbow-front 目录。<br>
 2、安装依赖<br>
-````
+````shell
 npm install
 ````
 3、启动Vue
-````
+````shell
 npm run serve
 ````
+
+### 数据库
+1、创建rainbowpan数据库<br>
+2、创建files和users两张表<br>
+```sql
+create table users
+(
+    EMAIL    varchar(100) not null comment '邮箱'
+        primary key,
+    USERNAME varchar(255) null comment '用户名',
+    IMG_URL  varchar(255) null comment '头像访问链接',
+    PASSWORD varchar(255) null comment '密码'
+);
+```
+```sql
+create table files
+(
+    FILE_ID       varchar(255) not null comment '文件id'
+        primary key,
+    EMAIL         varchar(100) not null comment '邮箱',
+    FILE_PID      varchar(100) null comment '父目录',
+    FILE_NAME     varchar(255) null comment '文件名称',
+    FILE_PATH     varchar(255) null comment '文件访问路径',
+    FILE_SIZE     varchar(100) null comment '文件大小',
+    FILE_COVER    varchar(255) null comment '文件封面存储路径',
+    CREATE_TIME   varchar(40)  null comment '入库时间',
+    UPDATE_TIME   varchar(40)  null comment '最后更新时间',
+    FOLDER_TYPE   varchar(10)  null comment '文件类型 0:文件 1:目录',
+    FILE_CATEGORY varchar(10)  null comment '0:视频 1:音频 2:图片 3:pdf 4:doc 5:excel 6:txt 7:code 8:zip 9:其他',
+    RECOVERY_TIME varchar(40)  null comment '回收时间',
+    STATUS        varchar(10)  null comment '0:回收站 1:正常'
+);
+```
+3、运行sql脚本，插入数据。
+4、测试账号：admin@qq.com，密码：admin。
 # 贡献
 欢迎提供反馈、报告问题和贡献代码！请提交 Issue 或 Pull 请求。
 
