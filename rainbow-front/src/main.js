@@ -20,7 +20,7 @@ Vue.config.productionTip = false
 //注册vuex
 Vue.use(vuex)
 Vue.use(ElementUI)
-
+//注册全局变量
 Vue.prototype.$axios = axios
 Vue.prototype.$global = global
 // Vue.prototype.$api = api

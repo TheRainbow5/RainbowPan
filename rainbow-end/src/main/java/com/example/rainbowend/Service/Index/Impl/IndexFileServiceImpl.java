@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,23 +145,16 @@ public class IndexFileServiceImpl implements IndexFileService {
                 int insertionResult = indexFileDao.saveFile(files);
                 if (insertionResult > 0) {
                     if (!localFile.exists()) {
-                        localFile.mkdirs();  // 创建文件夹
+                        // 将上传的文件保存到本地
+                        multipartFile.transferTo(localFile);
+                        return ResponseResult.ok("文件夹创建成功", resultMap);
                     }
-                    // 将上传的文件保存到本地
-                    multipartFile.transferTo(localFile);
-
-                    return ResponseResult.ok("文件夹创建成功", resultMap);
                 }
             }
 
             throw new Exception();  // 如果前面的逻辑不满足，抛出通用异常
-        } catch (IOException e) {
-            handleException(e);
-            return ResponseResult.error("文件上传时发生IO错误");
-        } catch (RuntimeException e) {
-            handleException(e);
-            return ResponseResult.error("发生本地文件不存在错误");
         } catch (Exception e) {
+            // 处理异常并回滚事务
             handleException(e);
             return ResponseResult.error("发生一些错误，请联系管理员");
         }
@@ -190,7 +182,7 @@ public class IndexFileServiceImpl implements IndexFileService {
 
             // 分页查询当前目录下的文件列表
             filesList = indexFileDao.getAllFilesByFileName(page, fileName);
-            
+
             map.put("fileList", filesList);
             map.put("totalNum", filesNum);
 

@@ -20,6 +20,7 @@ public class RestCorsFilter implements Filter {
 
     /**
      * 跨域访问
+     *
      * @param req
      * @param res
      * @param chain
@@ -30,7 +31,8 @@ public class RestCorsFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:5050");
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:5050");  //本地开发
+//        response.setHeader("Access-Control-Allow-Origin", "http://192.168.218.131:5050"); //生产环境
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET,OPTIONS, DELETE");
         response.setHeader("Access-Control-Max-Age", "36000");

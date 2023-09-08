@@ -1,8 +1,8 @@
-
 spring:
   profiles:
     include: mybatis   #引入其他配置文件
     active: dev   #开发环境
+  #    active: prod   #生产环境
   #热部署
   devtools:
     restart:
@@ -40,6 +40,11 @@ spring:
       charset: utf-8
       force: true
       enabled: true
-#用户专属文件夹存储目录
+
+#用户专属文件夹存储目录（项目存储路径+Users/）
 UserRoot: D:/program_Lab_Report/Computor/Full_Stack/Projects/RainbowPan/Users/
+##设置日志存储的目录
+#logging:
+#  file:
+#    path: log/
 

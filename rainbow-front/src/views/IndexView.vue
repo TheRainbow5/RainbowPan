@@ -597,6 +597,7 @@ export default {
                     type: 'error',
                     offset: 80
                 });
+                this.uploading = false;
             } else if (response.status === "0") {
                 //刷新页面
                 this.reload();

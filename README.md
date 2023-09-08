@@ -80,8 +80,13 @@ create table files
     STATUS        varchar(10)  null comment '0:回收站 1:正常'
 );
 ```
-3、运行sql脚本，插入数据。
+3、运行sql脚本，插入数据。<br>
 4、测试账号：admin@qq.com，密码：admin。
+
+# 项目部署到linux服务器
+具体参考[部署到服务器](https://www.notion.so/rainbow-jie/de19984c86e64f109c2076800dbf5601?pvs=4)
+
+
 # 贡献
 欢迎提供反馈、报告问题和贡献代码！请提交 Issue 或 Pull 请求。
 
